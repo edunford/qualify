@@ -14,11 +14,18 @@
 #' @export
 #'
 #' @examples
-# generate_module = function(variable_name = "",
-#                            caption = "",
-#                            ...){
-#   UseMethod("generate_module")
-# }
+#' 
+#' generate_module(variable_name = "var_1",
+#'                 caption = "This variable is about this ...",
+#'                 evidence = text_field(), 
+#'                 note = text_field(), 
+#'                 publication_date = date_field(), 
+#'                 code_var = c(1,2,3,4))
+generate_module = function(variable_name = "",
+                           caption = "",
+                           ...){
+  UseMethod("generate_module")
+}
 
 
 # @export 
@@ -54,17 +61,16 @@ date_field = function(placehold_date = "1900-01-01"){
 #' @export
 #'
 #' @examples
-text_field = function(txt = ""){
-  txt  
-}
+text_field = function(txt = ""){txt}
 
 
 # Test
 generate_module(variable_name = "var_1",
-                caption = "",
-                this = text_field(), 
-                date_field = date_field(), 
-                list = c(1,2,3,4))
+                caption = "This variable is about this ...",
+                evidence = text_field(), 
+                note = text_field(), 
+                publication_date = date_field(), 
+                code_var = c(1,2,3,4))
 
 
 
