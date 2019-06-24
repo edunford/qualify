@@ -5,6 +5,8 @@
   "dependencies": {
     "prop-types": "^15.7.2",
     "ra-data-json-server": "^2.9.3",
+    "ra-data-simple-rest": "^2.9.3",
+    "ra-input-rich-text": "^2.9.3",
     "react": "^16.8.6",
     "react-admin": "^2.9.3",
     "react-dom": "^16.8.6",

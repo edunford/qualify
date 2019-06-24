@@ -1,8 +1,13 @@
 import React from 'react';
 import { Admin, Resource } from 'react-admin';
-import jsonServerProvider from 'ra-data-json-server';
+import simpleRestProvider from 'ra-data-simple-rest';
 
-const dataProvider = jsonServerProvider('http://jsonplaceholder.typicode.com');
-const App = () => <Admin dataProvider={dataProvider} />;
+import { PostCreate } from './posts';
+
+const App = () => (
+    <Admin dataProvider={simpleRestProvider('http://127.0.0.1:8000')}>
+        <Resource name="posts" create={PostCreate} />
+    </Admin>
+);
 
 export default App;
