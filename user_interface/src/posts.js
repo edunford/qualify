@@ -1,6 +1,5 @@
 import React from 'react';
-import { SelectInput, Create, Edit, SimpleForm, DisabledInput, TextInput, DateInput, LongTextInput, ReferenceManyField, Datagrid, TextField, DateField, EditButton } from 'react-admin';
-import RichTextInput from 'ra-input-rich-text';
+import { SelectInput, Create, SimpleForm, TextInput } from 'react-admin';
 
 export const PostCreate = (props) => (
     <Create {...props}>
