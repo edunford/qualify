@@ -2,3 +2,25 @@
 .Rhistory
 .RData
 .Ruserdata
+
+# dependencies
+/user_interface/node_modules
+/user_interface/.pnp
+/user_interface.pnp.js
+
+# testing
+/user_interface/coverage
+
+# production
+/user_interface/build
+
+# misc
+/user_interface/.DS_Store
+/user_interface/.env.local
+/user_interface/.env.development.local
+/user_interface/.env.test.local
+/user_interface/.env.production.local
+
+/user_interface/npm-debug.log*
+/user_interface/yarn-debug.log*
+/user_interface/yarn-error.log*
