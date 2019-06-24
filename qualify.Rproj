@@ -1,4 +1,3 @@
-
 Version: 1.0
 
 RestoreWorkspace: Default
@@ -12,4 +11,3 @@ Encoding: UTF-8
 
 RnwWeave: Sweave
 LaTeX: pdfLaTeX
-
