@@ -2,6 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+.Rprofile
+.Rproj
 
 # dependencies
 /user_interface/node_modules
