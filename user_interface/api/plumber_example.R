@@ -1,6 +1,7 @@
 # Temp API
 
 source(here::here("R/qualify.R"))
+require(tidyverse)
 
 master_data <- data.frame(id=c("aa", "bb"), unit=c("Farm", "House"))
 
@@ -14,7 +15,7 @@ api_data_call = function(unit = "",.project_name = "test_db"){
       dplyr::tbl(con,t) %>% 
       dplyr::filter(.unit == unit) %>% 
       dplyr::collect() %>% 
-      dplyr::rename(unit = .unit)
+      dplyr::rename(id = .unit)
   }
   return(api_order) # Send back the request
 }
