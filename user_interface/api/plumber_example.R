@@ -1,5 +1,7 @@
 # Temp API
 
+example_data <- data.frame(id=c(1, 2), title=c("Farm", "House"), dropdown=c("M", "F"))
+
 #' @filter cors
 cors <- function(req, res) {
   
@@ -23,5 +25,11 @@ function(req, res){
 #  print(stuff)
   res$setHeader("Access-Control-Expose-Headers", "X-Total-Count")
   res$setHeader("X-Total-Count", 1)
-  data.frame(id=c(1, 2), title=c("Farm", "House"), dropdown=c("M", "F"))
+  example_data
+}
+
+#* An endpoint for getting specific records
+#* @get /posts/<id>
+function(id){
+  jsonlite::unbox(example_data[example_data$id==1,])
 }

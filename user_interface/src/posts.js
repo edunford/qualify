@@ -1,9 +1,13 @@
 import React from 'react';
-import { SelectInput, Create, TextInput, TabbedForm, FormTab, ListGuesser } from 'react-admin';
+import { SelectInput, Edit, TextInput, TabbedForm, FormTab } from 'react-admin';
 import RichTextInput from 'ra-input-rich-text';
 
-export const PostCreate = (props) => (
-    <Create {...props}>
+const PostTitle = ({ record }) => {
+    return <span>Post {record ? `"${record.title}"` : ''}</span>;
+};
+
+export const PostEdit = (props) => (
+    <Edit title={<PostTitle />} {...props}>
         <TabbedForm>
             <FormTab label="Coding">
                 <TextInput source="title" />
@@ -13,5 +17,5 @@ export const PostCreate = (props) => (
                 <RichTextInput source="body" />
             </FormTab>
         </TabbedForm>
-    </Create>
+    </Edit>
 );
