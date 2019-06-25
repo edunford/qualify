@@ -16,17 +16,12 @@ cors <- function(req, res) {
   
 }
 
-#* A meaningless input
-#* @post /posts
-function(req, title, dropdown){
-  stuff <- list(title=title, gender=dropdown)
-  print(stuff)
-}
-
-#* Return the sum of two numbers
-#* @param a The first number to add
-#* @param b The second number to add
-#* @post /happy
-function(a, b){
-  as.numeric(a) + as.numeric(b)
+#* A test endpoint for providing dummy data
+#* @get /posts
+function(req, res){
+#  stuff <- list(title=title, gender=dropdown)
+#  print(stuff)
+  res$setHeader("Access-Control-Expose-Headers", "X-Total-Count")
+  res$setHeader("X-Total-Count", 1)
+  data.frame(id=c(1, 2), title=c("Farm", "House"), dropdown=c("M", "F"))
 }

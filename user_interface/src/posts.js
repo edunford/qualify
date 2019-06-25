@@ -1,5 +1,5 @@
 import React from 'react';
-import { SelectInput, Create, TextInput, TabbedForm, FormTab } from 'react-admin';
+import { SelectInput, Create, TextInput, TabbedForm, FormTab, ListGuesser } from 'react-admin';
 import RichTextInput from 'ra-input-rich-text';
 
 export const PostCreate = (props) => (
