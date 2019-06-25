@@ -33,13 +33,12 @@ qualify = function(project_name = "test_db",
 
 #' sql_instance
 #' 
-#' Generate/call existing SQL database.
+#' [AUX] Generate/call existing SQL database.
 #'
 #' @param db_name Name of the data base structure
 #'
 #' @return Connection to SQLite DB
 #' @importFrom magrittr "%>%"
-#' @export
 #'
 #' @examples
 sql_instance = function(db_name = "test_db") {
@@ -89,18 +88,23 @@ generate_module.qualify_obj =
            ...){
   # Connect to extant DB entry 
   con = sql_instance(.data$project_name)
+  unit = .data$unit_of_analysis
   
   # Upload application instructions for proposed module.
   if(".input_state"  %in%  src_tbls(con)){
-    current = tbl(con,".input_state") %>% dplyr::collect() # Import the current input state
+    current = dplyr::tbl(con,".input_state") %>% dplyr::select(-.id) %>% dplyr::collect() # Import the current input state
     tibble::tibble(var_name = variable_name,
                    caption = caption,
                    code_map = map_input(...)) %>%
       dplyr::bind_rows(current) %>% 
-      unique() %>% 
+      unique(.) %>% 
+      {dplyr::mutate(.,.id = paste0("v",nrow(.):1))} %>% 
+      dplyr::select(.,.id,dplyr::everything()) %>% 
+      dplyr::arrange(.id) %>% 
       dplyr::copy_to(dest=con,df = ., name = ".input_state",overwrite = T,temporary = F)
   } else{
-    tibble::tibble(var_name = variable_name,
+    tibble::tibble(.id = "v1",
+                   var_name = variable_name,
                    caption = caption,
                    code_map = map_input(...)) %>% 
       dplyr::copy_to(dest=con,df = ., name = ".input_state",overwrite = T,temporary = F)
@@ -112,11 +116,10 @@ generate_module.qualify_obj =
   entry = dplyr::as_tibble(matrix(NA,ncol = length(names)))
   colnames(entry) = names
   entry %>% 
-    tidyr::crossing(tibble(.unit=.unit),.) %>% 
-    copy_to(dest=con,df = ., name = variable_name,overwrite = T,temporary = F)
+    tidyr::crossing(tibble::tibble(.unit=unit),.) %>% 
+    dplyr::copy_to(dest=con,df = ., name = paste0("field_",variable_name),overwrite = T,temporary = F)
   
-  
-  return(.data) # pass back initial qualify instructions
+  return(invisible(.data)) # pass back initial qualify instructions (but can't see it)
 }
 
 
@@ -133,30 +136,29 @@ generate_module.qualify_obj =
 #'
 #' @examples
 drop_module = function(.data,variable_name){
-  UseMethod("qualify_obj")
+  UseMethod("drop_module")
 }
 
 #' @export
-drop_module.qualify_obj = 
-  function(.data,variable_name){
-    
-    # Connect to extant DB entry 
-    con = sql_instance(.data$project_name)
-    
-    # Drop from the input state
-    if(".input_state"  %in%  src_tbls(con)){
-      tbl(con,".input_state") %>% 
-        dplyr::collect() %>% 
-        dplyr::filter(var_name!=variable_name) %>% 
-        dplyr::copy_to(dest=con,df = ., name = ".input_state",
-                       overwrite = T,temporary = F)
-    }
-    
-    # Drop specific data table entry
-    dplyr::copy_to(con,df=tibble(NA),name = variable_name,overwrite = T)
-    
-    return(.data) # pass back initial qualify instructions
+drop_module.qualify_obj = function(.data,variable_name){
+  
+  # Connect to extant DB entry 
+  con = sql_instance(.data$project_name)
+  
+  # Drop from the input state
+  if(".input_state"  %in%  dplyr::src_tbls(con)){
+    tbl(con,".input_state") %>% 
+      dplyr::collect() %>% 
+      dplyr::filter(var_name!=variable_name) %>% 
+      dplyr::copy_to(dest=con,df = ., name = ".input_state",
+                     overwrite = T,temporary = F)
   }
+  
+  # Drop specific data table entry
+  dplyr::copy_to(con,df=tibble::tibble(NA),name = paste0("field_",variable_name),overwrite = T)
+  
+  return(invisible(.data)) # pass back initial qualify instructions (but can't see it)
+}
 
 
 #' field_date
@@ -193,7 +195,9 @@ field_text = function(txt = "Empty"){paste0("text: ",txt)}
 #' @export
 #'
 #' @examples
-field_dropdown = function(inputs = c()){type = class(inputs);paste0(type,": ",paste0(inputs,collapse=", "))}
+field_dropdown = function(inputs = c()){
+  type = class(inputs);paste0(type,": ",paste0(inputs,collapse=", "))
+}
 
 
 #' map_input
@@ -204,7 +208,6 @@ field_dropdown = function(inputs = c()){type = class(inputs);paste0(type,": ",pa
 #' @param ... all entry fields passed from generate module.
 #'
 #' @return
-#' @export
 #'
 #' @examples
 map_input = function(con,...){
