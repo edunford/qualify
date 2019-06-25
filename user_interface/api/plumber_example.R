@@ -19,7 +19,7 @@ cors <- function(req, res) {
 }
 
 #* A test endpoint for providing dummy data
-#* @get /posts
+#' @get /posts
 function(req, res){
 #  stuff <- list(title=title, gender=dropdown)
 #  print(stuff)
@@ -30,7 +30,11 @@ function(req, res){
 
 #* An endpoint for getting specific records
 #' @get /posts/<pid>
-#' @put /posts/<pid>
 function(pid){
-  jsonlite::unbox(example_data[example_data$id==pid,])
+  jsonlite::unbox(example_data[example_data$id==pid,]) 
+}
+#' @put /posts/<pid>
+function(req){
+  print(req$postBody)
+  jsonlite::fromJSON(req$postBody)
 }
