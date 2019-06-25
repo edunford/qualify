@@ -15,10 +15,7 @@ export const PostEdit = (props) => (
     <Edit title={<PostTitle />} {...props}>
         <TabbedForm>
             <FormTab label="Coding">
-                <TextInput source="evidence" />
-                <DateInput source="publication_date" />
-                <Header variable="Geography" />
-                <SelectInput source="code" choices={[{ id: 'M', name: 'Male' }, { id: 'F', name: 'Female' }]} />
+                XXXXX
             </FormTab>
             <FormTab label="Notes">
                 <RichTextInput source="body" />
