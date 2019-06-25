@@ -19,7 +19,15 @@
 #' @examples
 qualify = function(project_name = "test_db",
                    unit_of_analysis = c("a","b","c","d")){
-  list(project_name = project_name,unit_of_analysis = unit_of_analysis)
+  UseMethod("qualify")
+}
+
+#' @export
+qualify = function(project_name = "test_db",
+                   unit_of_analysis = c("a","b","c","d")){
+  out = list(project_name = project_name,unit_of_analysis = unit_of_analysis)
+  class(out) = c(class(out),"qualify_obj")
+  return(out)
 }
 
 
@@ -65,11 +73,20 @@ sql_instance = function(db_name = "test_db") {
 #'                 note = text_field(), 
 #'                 publication_date = date_field(), 
 #'                 code_var = c(1,2,3,4))
-#'                 
 generate_module = function(.data,
                            variable_name = "",
                            caption = "",
                            ...){
+  UseMethod("generate_module")
+}
+
+
+#' @export
+generate_module.qualify_obj = 
+  function(.data,
+           variable_name = "",
+           caption = "",
+           ...){
   # Connect to extant DB entry 
   con = sql_instance(.data$project_name)
   
@@ -116,26 +133,32 @@ generate_module = function(.data,
 #'
 #' @examples
 drop_module = function(.data,variable_name){
-  
-  # Connect to extant DB entry 
-  con = sql_instance(.data$project_name)
-  
-  # Drop from the input state
-  if(".input_state"  %in%  src_tbls(con)){
-    tbl(con,".input_state") %>% 
-      dplyr::collect() %>% 
-      dplyr::filter(var_name!=variable_name) %>% 
-      dplyr::copy_to(dest=con,df = ., name = ".input_state",
-                     overwrite = T,temporary = F)
-  }
-  
-  # Drop specific data table entry
-  dplyr::copy_to(con,df=tibble(NA),name = variable_name,overwrite = T)
-  
-  return(.data) # pass back initial qualify instructions
+  UseMethod("qualify_obj")
 }
-  
-  
+
+#' @export
+drop_module.qualify_obj = 
+  function(.data,variable_name){
+    
+    # Connect to extant DB entry 
+    con = sql_instance(.data$project_name)
+    
+    # Drop from the input state
+    if(".input_state"  %in%  src_tbls(con)){
+      tbl(con,".input_state") %>% 
+        dplyr::collect() %>% 
+        dplyr::filter(var_name!=variable_name) %>% 
+        dplyr::copy_to(dest=con,df = ., name = ".input_state",
+                       overwrite = T,temporary = F)
+    }
+    
+    # Drop specific data table entry
+    dplyr::copy_to(con,df=tibble(NA),name = variable_name,overwrite = T)
+    
+    return(.data) # pass back initial qualify instructions
+  }
+
+
 #' field_date
 #'
 #' Placeholder for date field entry parameter on the application module. 
