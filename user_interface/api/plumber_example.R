@@ -8,7 +8,7 @@ cors <- function(req, res) {
   res$setHeader("Access-Control-Allow-Origin", "*")
   
   if (req$REQUEST_METHOD == "OPTIONS") {
-    res$setHeader("Access-Control-Allow-Methods","*")
+    res$setHeader("Access-Control-Allow-Methods","GET,POST,PUT")
     res$setHeader("Access-Control-Allow-Headers", req$HTTP_ACCESS_CONTROL_REQUEST_HEADERS)
     res$status <- 200 
     return(list())
@@ -29,7 +29,8 @@ function(req, res){
 }
 
 #* An endpoint for getting specific records
-#* @get /posts/<id>
-function(id){
-  jsonlite::unbox(example_data[example_data$id==1,])
+#' @get /posts/<pid>
+#' @put /posts/<pid>
+function(pid){
+  jsonlite::unbox(example_data[example_data$id==pid,])
 }
