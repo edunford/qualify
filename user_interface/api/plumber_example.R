@@ -1,10 +1,26 @@
 # Temp API
 
+#' @filter cors
+cors <- function(req, res) {
+  
+  res$setHeader("Access-Control-Allow-Origin", "*")
+  
+  if (req$REQUEST_METHOD == "OPTIONS") {
+    res$setHeader("Access-Control-Allow-Methods","*")
+    res$setHeader("Access-Control-Allow-Headers", req$HTTP_ACCESS_CONTROL_REQUEST_HEADERS)
+    res$status <- 200 
+    return(list())
+  } else {
+    plumber::forward()
+  }
+  
+}
+
 #* A meaningless input
-#* @param msg The message to echo
-#* @get /posts
-function(msg){
-  print(msg)
+#* @post /posts
+function(req, title, dropdown){
+  stuff <- list(title=title, gender=dropdown)
+  print(stuff)
 }
 
 #* Return the sum of two numbers
