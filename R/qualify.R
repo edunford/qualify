@@ -43,11 +43,11 @@ qualify = function(project_name = "test_db",
 #' @examples
 sql_instance = function(db_name = "test_db") {
   # Build the Data Instance.
-  if(!file.exists(paste0("Data/",db_name,".sqlite"))){
-    dplyr::src_sqlite(paste0("Data/",db_name,".sqlite"),create=T) 
-    con <- dplyr::src_sqlite(paste0("Data/",db_name,".sqlite"))
+  if(!file.exists(here::here(paste0("Data/",db_name,".sqlite")))){
+    dplyr::src_sqlite(here::here(paste0("Data/",db_name,".sqlite")),create=T) 
+    con <- dplyr::src_sqlite(here::here(paste0("Data/",db_name,".sqlite")))
   }else{
-    con <- dplyr::src_sqlite(paste0("Data/",db_name,".sqlite"))
+    con <- dplyr::src_sqlite(here::here(paste0("Data/",db_name,".sqlite")))
   }
   return(con)
 }
@@ -113,7 +113,7 @@ generate_module.qualify_obj =
   # Generate enmpy table for respective variable field
   input = map_input(...)
   names = sapply(stringr::str_split(stringr::str_split(input,";")[[1]]," = "),function(x) stringr::str_trim(x[1]))
-  entry = dplyr::as_tibble(matrix(NA,ncol = length(names)))
+  entry = dplyr::as_tibble(matrix(-99,ncol = length(names)))
   colnames(entry) = names
   entry %>% 
     tidyr::crossing(tibble::tibble(.unit=unit),.) %>% 
@@ -184,7 +184,9 @@ field_date = function(placehold_date = "1900-01-01"){
 #' @export
 #'
 #' @examples
-field_text = function(txt = "Empty"){paste0("text: ",txt)}
+field_text = function(txt = "Empty"){
+  paste0("text: ",txt)
+}
 
 
 #' field_dropdown
@@ -196,7 +198,7 @@ field_text = function(txt = "Empty"){paste0("text: ",txt)}
 #'
 #' @examples
 field_dropdown = function(inputs = c()){
-  type = class(inputs);paste0(type,": ",paste0(inputs,collapse=", "))
+  paste0("<SelectInput source= 'XXXXX' choices={[",paste0("{ id: '",inputs,"'}",collapse = ","),"]} />")
 }
 
 
@@ -217,6 +219,18 @@ map_input = function(con,...){
 }
 
 
+
+#' populate_source
+#' 
+#' [Aux] populate internal source code for js argument. 
+#'
+#' @param source_name 
+#' @param expr 
+#'
+#' @return js code snippet with the appropriate source name
+#'
+#' @examples
+populate_source = function(source_name="",expr){gsub("XXXXX",source_name,expr)}
 
   
 

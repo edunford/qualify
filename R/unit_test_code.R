@@ -11,13 +11,12 @@ qualify(project_name = "test_db",
   generate_module(variable_name = "var_1",
                   caption = "This variable is about this ...",
                   evidence = field_text(),
-                  note = field_text(),
                   publication_date = field_date(),
-                  division_1 = field_dropdown(c(1,2,3,4))) %>%
+                  code = field_dropdown(c(1,2,3,4))) 
 
-  generate_module(variable_name = "var_2",
-                  caption = "This variable is about something else ...",
-                  notes = text_field())
+  # generate_module(variable_name = "var_2",
+  #                 caption = "This variable is about something else ...",
+  #                 notes = text_field())
 
 
 
@@ -25,7 +24,7 @@ qualify(project_name = "test_db",
 qualify() %>%
   {sql_instance(.$project_name)} %>%
   tbl(".input_state") %>%
-  collect() 
+  collect()
 
 qualify() %>%
   {sql_instance(.$project_name)} %>%
@@ -34,7 +33,7 @@ qualify() %>%
 
 
 # Dropping any existing data structure
-qualify() %>% drop_module("var_1") %>% drop_module("var_2")
+qualify() %>% drop_module("var_1") #%>% drop_module("var_2")
 
 
 
@@ -57,5 +56,7 @@ plmb_data_call = function(unit = "",.project_name = "test_db"){
   }
   return(api_order) # Send back the request
 }
+
+
 
 
