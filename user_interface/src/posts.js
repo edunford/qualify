@@ -1,11 +1,17 @@
 import React from 'react';
-import { SelectInput, Create, SimpleForm, TextInput } from 'react-admin';
+import { SelectInput, Create, TextInput, TabbedForm, FormTab } from 'react-admin';
+import RichTextInput from 'ra-input-rich-text';
 
 export const PostCreate = (props) => (
     <Create {...props}>
-        <SimpleForm>
-            <TextInput source="title" />
-            <SelectInput source="dropdown" choices={[{ id: 'M', name: 'Male' }, { id: 'F', name: 'Female' }]} />
-        </SimpleForm>
+        <TabbedForm>
+            <FormTab label="Coding">
+                <TextInput source="title" />
+                <SelectInput source="dropdown" choices={[{ id: 'M', name: 'Male' }, { id: 'F', name: 'Female' }]} />
+            </FormTab>
+            <FormTab label="Notes">
+                <RichTextInput source="body" />
+            </FormTab>
+        </TabbedForm>
     </Create>
 );
