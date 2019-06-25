@@ -169,9 +169,7 @@ drop_module.qualify_obj = function(.data,variable_name){
 #' @export
 #'
 #' @examples
-field_date = function(placehold_date = "1900-01-01"){
-  paste0("Date: ",placehold_date)
-}
+field_date = function(){'<DateInput source= "XXXXX" />'}
 
 
 #' field_text
@@ -184,9 +182,7 @@ field_date = function(placehold_date = "1900-01-01"){
 #' @export
 #'
 #' @examples
-field_text = function(txt = "Empty"){
-  paste0("text: ",txt)
-}
+field_text = function(){'<TextInput source= "XXXXX" />'}
 
 
 #' field_dropdown
@@ -198,7 +194,7 @@ field_text = function(txt = "Empty"){
 #'
 #' @examples
 field_dropdown = function(inputs = c()){
-  paste0("<SelectInput source= 'XXXXX' choices={[",paste0("{ id: '",inputs,"'}",collapse = ","),"]} />")
+  paste0('<SelectInput source= "XXXXX" choices={[',paste0("{ id: '",inputs,"'}",collapse = ","),"]} />")
 }
 
 
@@ -214,10 +210,14 @@ field_dropdown = function(inputs = c()){
 #' @examples
 map_input = function(con,...){
   entries = list(...)
-  code_map = paste0(names(entries)," = ",entries,collapse="; ")
+  entry_names = names(entries)
+  code_map = c()
+  for(i in seq_along(entries)){
+    code_map = c(code_map,populate_source(entry_names[i],entries[[i]]))
+  }
+  code_map = paste0(code_map,collapse="\n")
   return(code_map)
 }
-
 
 
 #' populate_source
@@ -235,4 +235,44 @@ populate_source = function(source_name="",expr){gsub("XXXXX",source_name,expr)}
   
 
 
+#' generate_app
+#'
+#' @param .data 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+generate_app = function(.data){
+  app_instances <- 
+    sql_instance(.data$project_name) %>% 
+    tbl(".input_state") %>% 
+    collect() 
+  
+  template = readr::read_lines(here::here("user_interface/src/posts_template.js"))
+  
+  composit = c()
+  for(i in 1:nrow(app_instances)){
+    js_code = app_instances$code_map[i]
+    var_name = app_instances$var_name[i]
+    
+    composit <- 
+      c(composit,paste0('<Header variable="',var_name,'" />'),
+        strsplit(app_instances$code_map,split = "\n")[[1]])
+  }
+  
+  
+  # Compile pieces 
+  c(template[1:grep("XXXXX",template)-1],
+    composit,
+    template[grep("XXXXX",template)+1:length(template)]) %>% 
+    {.[!is.na(.)]} %>% 
+    readr::write_lines(.,here::here("user_interface/src/posts_compiled.js"))
+    
+  cat("\nApp generated!\n")
+}
+
+
+
+# qualify() %>% generate_app()
 
