@@ -6,12 +6,17 @@ const PostTitle = ({ record }) => {
     return <span>Post {record ? `"${record.title}"` : ''}</span>;
 };
 
+const Header = () => {
+    return <hr></hr>;
+}
+
 export const PostEdit = (props) => (
     <Edit title={<PostTitle />} {...props}>
         <TabbedForm>
             <FormTab label="Coding">
                 <TextInput source="evidence" />
                 <DateInput source="publication_date" />
+                <Header />
                 <SelectInput source="code" choices={[{ id: 'M', name: 'Male' }, { id: 'F', name: 'Female' }]} />
             </FormTab>
             <FormTab label="Notes">
