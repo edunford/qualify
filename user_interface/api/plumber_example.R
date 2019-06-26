@@ -58,6 +58,5 @@ function(pid){
 
 #' @put /posts/<pid>
 function(req){
-  print(req$postBody)
   jsonlite::fromJSON(req$postBody)
 }
