@@ -38,7 +38,7 @@ const ProgressBar = ({ source, record = {} }) => {
 export const PostList = props => (
     <List {...props}>
         <Datagrid rowClick="edit">
-            <TextField source="id" name="Unit of Analysis" />
+            <TextField source="id" label="Unit of Analysis" />
             <ProgressBar source="Progress" />
         </Datagrid>
     </List>
