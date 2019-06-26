@@ -1,5 +1,5 @@
 import React from 'react';
-import { SelectInput, Edit, TextInput, TabbedForm, FormTab, DateInput } from 'react-admin';
+import { SelectInput, Edit, TextInput, TabbedForm, FormTab, DateInput, TextField , List, Datagrid} from 'react-admin';
 import RichTextInput from 'ra-input-rich-text';
 
 const PostTitle = ({ record }) => {
@@ -14,6 +14,13 @@ const Caption = ({ variable }) => {
     return(<div><em>{variable}</em></div>);
 }
 
+export const PostList = props => (
+    <List {...props}>
+        <Datagrid rowClick="edit">
+            <TextField source="id" />
+        </Datagrid>
+    </List>
+);
 
 export const PostEdit = (props) => (
     <Edit title={<PostTitle />} {...props}>
