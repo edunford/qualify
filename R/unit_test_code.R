@@ -26,17 +26,17 @@ qualify(project_name = "test_db",
 
 # Looking into the database...
 qualify() %>%
-  {sql_instance(.$project_name)} %>%
+  {sql_instance(.$project_path)} %>%
   tbl(".input_state") %>%
   collect()
 
 qualify() %>%
-  {sql_instance(.$project_name)} %>% 
+  {sql_instance(.$project_path)} %>% 
   tbl(".unit")
 
 qualify() %>%
-  {sql_instance(.$project_name)} %>%
-  tbl("field_var_1") %>%
+  {sql_instance(.$project_path)} %>%
+  tbl("v1") %>%
   collect()
 
 

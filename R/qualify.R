@@ -6,6 +6,9 @@
 #   - {Abby} Auto-import of existing codebook. 
 
 
+
+# Front-End Interface ----------------------------------------------
+
 #' qualify
 #' 
 #' Master function that initializes the data object
@@ -19,7 +22,7 @@
 #'
 #' @examples
 qualify = function(project_name = "test_db",
-                   project_path = "",
+                   project_path = "~/Desktop/test_project",
                    unit_of_analysis = NULL){
   UseMethod("qualify")
 }
@@ -28,14 +31,16 @@ qualify = function(project_name = "test_db",
 qualify = function(project_name = "test_db",
                    project_path = "~/Desktop/test_project",
                    unit_of_analysis = NULL){
-  out = list(project_name = project_name, unit_of_analysis = unit_of_analysis)
+  out = list(project_name = project_name, 
+             unit_of_analysis = unit_of_analysis, 
+             project_path = project_path)
   
   # Create project directory
   if(!file.exists(project_path)){dir.create(project_path)}
   
   # Save the unit of analysis as a lookup table in the SQL.
   if(!is.null(unit_of_analysis)){
-    sql_instance(project_name) %>% 
+    sql_instance(project_path) %>% 
       dplyr::copy_to(dest = .,
                      df=tibble(id=unit_of_analysis),
                      name=".unit",overwrite=T,temporary=F) 
@@ -57,13 +62,16 @@ qualify = function(project_name = "test_db",
 #' @importFrom magrittr "%>%"
 #'
 #' @examples
-sql_instance = function(db_name = "test_db") {
+sql_instance = function(path = "") {
+  
+  set_path = paste0(path,"/.qualify_data.sqlite")
+  
   # Build the Data Instance.
-  if(!file.exists(here::here(paste0("Data/",db_name,".sqlite")))){
-    dplyr::src_sqlite(here::here(paste0("Data/",db_name,".sqlite")),create=T) 
-    con <- dplyr::src_sqlite(here::here(paste0("Data/",db_name,".sqlite")))
+  if(!file.exists(set_path)){
+    dplyr::src_sqlite(set_path,create=T) 
+    con <- dplyr::src_sqlite(set_path)
   }else{
-    con <- dplyr::src_sqlite(here::here(paste0("Data/",db_name,".sqlite")))
+    con <- dplyr::src_sqlite(set_path)
   }
   return(con)
 }
@@ -96,7 +104,7 @@ generate_module.qualify_obj =
            caption = "",
            ...){
   # Connect to extant DB entry 
-  con = sql_instance(.data$project_name)
+  con = sql_instance(.data$project_path)
   unit = .data$unit_of_analysis
   
   # Upload application instructions for proposed module.
@@ -157,7 +165,7 @@ drop_module = function(.data,variable_name){
 drop_module.qualify_obj = function(.data,variable_name){
   
   # Connect to extant DB entry 
-  con = sql_instance(.data$project_name)
+  con = sql_instance(.data$project_path)
   
   # Drop from the input state
   if(".input_state"  %in%  dplyr::src_tbls(con)){
@@ -249,8 +257,6 @@ populate_source = function(source_name="",expr){
   gsub("XXXXX",paste0("XX_",source_name),expr)
 }
 
-  
-
 
 #' generate_app
 #' 
@@ -264,10 +270,15 @@ populate_source = function(source_name="",expr){
 #'
 #' @examples
 generate_app = function(.data){
+  UseMethod("generate_app")
+}
+
+#' @export
+generate_app = function(.data){
   app_instances <- 
-    sql_instance(.data$project_name) %>% 
-    tbl(".input_state") %>% 
-    collect() 
+    sql_instance(.data$project_path) %>% 
+    dplyr::tbl(".input_state") %>% 
+    dplyr::collect() 
   
   template = readr::read_lines(here::here("user_interface/src/posts_template.js"))
   
@@ -296,5 +307,95 @@ generate_app = function(.data){
 }
 
 
+
+# API Function Calls ------------------------------------------------------
+
+#' import_data_state
+#'
+#' @param .project_name initial name of the data_base build.
+#'
+#' @return exports all units along with the current state of the projec
+import_data_state <- function(.project_path = "",empty_value_placeholder=""){
+  con = sql_instance(.project_path) 
+  all_tbls = grep("v",dplyr::src_tbls(con),value = T)
+  report = c()
+  for ( t in all_tbls){
+    # Draw out the most recent entry from the data folder
+    report <-
+      dplyr::tbl(con,t) %>% 
+      dplyr::collect() %>% 
+      dplyr::group_by(.unit) %>% 
+      dplyr::arrange(desc(timestamp)) %>% 
+      dplyr::slice(1) %>% 
+      dplyr::ungroup() %>% 
+      dplyr::select(-timestamp) %>% 
+      dplyr::bind_rows(report,.)
+  }
+  
+  # return the data state with a progress report
+  report %>% 
+    dplyr::group_by(.unit) %>% 
+    tidyr::nest() %>% 
+    dplyr::mutate(progress = map(data,function(x) sum(rowSums(x == empty_value_placeholder) < ncol(x))/nrow(x))) %>% 
+    tidyr::unnest(progress) %>% 
+    dplyr::select(id = .unit, Progress = progress)
+}
+
+
+#' api_data_call
+#'
+#' @param unit 
+#' @param .project_name 
+#'
+#' @return
+api_data_call = function(unit = "",.project_path = ""){
+  con = sql_instance(.project_path)
+  all_tbls = grep("v",dplyr::src_tbls(con),value = T)
+  api_order <- c()
+  for(t in all_tbls){
+    dplyr::tbl(con,t) %>%
+      dplyr::filter(.unit == unit) %>%
+      dplyr::arrange(desc(timestamp)) %>% 
+      dplyr::select(-.unit) %>% 
+      dplyr::collect() %>% 
+      dplyr::slice(1) %>% 
+      {colnames(.) = paste0(t,"_",colnames(.));.} %>% 
+      dplyr::bind_cols(api_order,.) -> api_order
+  }
+  api_order$id = unit
+  return(as.data.frame(api_order)) # Send back the request
+}
+
+
+#' upload_data
+#'
+#' @param entry 
+#' @param .project_name 
+#'
+#' @return
+upload_data = function(entry,.project_path = ""){
+  # Process entry records for resubmission into the data element. 
+  id = entry$id 
+  entry["id"] = NULL
+  entry["Progress"] = NULL
+  tags = stringr::str_remove_all(stringr::str_extract_all(names(entry),"v\\d_",simplify = T),"_") 
+  vars = stringr::str_remove_all(names(entry),"v\\d_")
+  to_record <- 
+    tibble::tibble(.tag = tags,vars,entry = unlist(entry,use.names = F)) %>% 
+    tidyr::spread(vars,entry) %>% 
+    dplyr::mutate(.unit=id)
+  
+  # Loop through tags and draw out relevant features
+  for(t in to_record$.tag){
+    tmp = to_record %>% 
+      dplyr::filter(.tag == t) %>%
+      dplyr::select(-.tag) %>% 
+      dplyr::mutate(timestamp = as.character(Sys.time()))
+    
+    # Append to existing data frame
+    con = sql_instance(.project_path)
+    DBI::dbWriteTable(conn=con$con, name = t, value = tmp,append=T) 
+  }
+}
 
 
