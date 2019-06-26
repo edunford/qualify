@@ -1,5 +1,5 @@
 import React from 'react';
-import { SelectInput, Edit, TextInput, TabbedForm, FormTab, DateInput, TextField , List, Datagrid} from 'react-admin';
+import { SelectInput, Edit, TextInput, TabbedForm, FormTab, DateInput, TextField , List, Datagrid, Toolbar, SaveButton} from 'react-admin';
 import RichTextInput from 'ra-input-rich-text';
 
 const headerStyle= {
@@ -26,7 +26,7 @@ export const PostList = props => (
 );
 
 export const PostEdit = (props) => (
-    <Edit title={<PostTitle />} {...props}>
+    <Edit title={<PostTitle />} undoable={false} {...props}>
         <TabbedForm>
             <FormTab label="Coding">
                 XXXXX
