@@ -6,7 +6,6 @@
 #   - {Abby} Auto-import of existing codebook. 
 
 
-
 # Front-End Interface ----------------------------------------------
 
 #' qualify
@@ -312,12 +311,15 @@ generate_app = function(.data){
 
 #' import_data_state
 #'
+#' [AUX.] Function reads in and reports on the state of the established coding
+#' task
+#'
 #' @param .project_name initial name of the data_base build.
 #'
 #' @return exports all units along with the current state of the projec
 import_data_state <- function(.project_path = "",empty_value_placeholder=""){
   con = sql_instance(.project_path) 
-  all_tbls = grep("v",dplyr::src_tbls(con),value = T)
+  all_tbls = grep("v", dplyr::src_tbls(con),value = T)
   report = c()
   for ( t in all_tbls){
     # Draw out the most recent entry from the data folder
@@ -344,8 +346,11 @@ import_data_state <- function(.project_path = "",empty_value_placeholder=""){
 
 #' api_data_call
 #'
-#' @param unit 
-#' @param .project_name 
+#' [AUX.] Wrapper that calls to the current state of the coding task to feed to
+#' the API upon a GET from the UI client.
+#'
+#' @param unit
+#' @param .project_name
 #'
 #' @return
 api_data_call = function(unit = "",.project_path = ""){
@@ -369,8 +374,11 @@ api_data_call = function(unit = "",.project_path = ""){
 
 #' upload_data
 #'
-#' @param entry 
-#' @param .project_name 
+#' [AUX.] Wrapper that saves user input to the existing database structure after
+#' receiving a post request from the client. 
+#'
+#' @param entry
+#' @param .project_name
 #'
 #' @return
 upload_data = function(entry,.project_path = ""){
@@ -398,4 +406,107 @@ upload_data = function(entry,.project_path = ""){
   }
 }
 
+
+# Posterior Functions --------------------------------------------------
+
+# Pull data out of the data base. 
+# (Only optimized for a single coder at the moment)
+
+
+
+#' pull_timeline
+#' 
+#' Pull in timeline information about the coding timeline.
+#'
+#' @param .project_path 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+pull_timeline = function(.project_path){
+  
+} 
+
+
+#' pull_coders
+#'
+#' @param .project_path 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+pull_coders = function(.project_path){
+  
+} 
+
+
+#' pull_data
+#'
+#' Posterior function that call from the data base to make a distinct data frame
+#' with all fields from all coded variables. The function allows users to draw
+#' the most recent state of the coding task to convert into a usable data frame
+#' for analysis
+#'
+#' @param .project_path
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' 
+#' # Must point to the project path created by qualify()
+#' pull_data(.project_path = "~/Desktop/test_project/")
+#' 
+pull_data = function(.project_path = ""){
+  if(dir.exists(.project_path) & check_db_exists(.project_path)){
+    con = sql_instance(.project_path) 
+    all_tbls = grep("v", dplyr::src_tbls(con),value = T)
+    data_summary = c()
+    
+    for (t in all_tbls){
+      # Get the variable name
+      var_name =  dplyr::tbl(con,".input_state") %>% 
+        dplyr::filter(.id == t) %>% 
+        dplyr::collect() %>% .$var_name
+      
+      # Extract the data state
+      data_summary <-
+        dplyr::tbl(con,t) %>% 
+        dplyr::collect() %>% 
+        dplyr::group_by(.unit) %>% 
+        dplyr::arrange(desc(timestamp)) %>% 
+        dplyr::slice(1) %>% 
+        dplyr::ungroup() %>% 
+        dplyr::mutate(variable = var_name) %>% 
+        select(variable,.unit,timestamp,dplyr::everything()) %>% 
+        dplyr::bind_rows(data_summary,.) 
+    }
+    return(data_summary)
+  } else{
+    cat("\nNo qualify database located in the provide path.\n")
+  }
+  
+} 
+
+
+
+#' check_db_exists
+#' 
+#' [Aux.] Check if a data base file exist
+#'
+#' @param path 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' 
+#' check_db_exists()
+#' 
+check_db_exists = function(.project_path = ""){
+  set_path = paste0(path,"/.qualify_data.sqlite")
+  file.exists(set_path)
+}
 
