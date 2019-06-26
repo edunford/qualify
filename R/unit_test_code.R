@@ -31,6 +31,10 @@ qualify() %>%
   collect()
 
 qualify() %>%
+  {sql_instance(.$project_name)} %>% 
+  tbl(".unit")
+
+qualify() %>%
   {sql_instance(.$project_name)} %>%
   tbl("field_var_1") %>%
   collect()
@@ -38,28 +42,6 @@ qualify() %>%
 
 # Dropping any existing data structure
 qualify() %>% drop_module("var_1") %>% drop_module("var_2")
-
-
-
-
-
-
-
-# (TEMP) Application Functionality -------------------------------------------------------------
-
-plmb_data_call = function(unit = "",.project_name = "test_db"){
-  con = sql_instance(.project_name) 
-  all_tbls = grep("field_",src_tbls(con),value = T)
-  api_order = as.list(rep(NA,length(all_tbls)))
-  names(api_order) = all_tbls
-  for(t in all_tbls){
-    api_order[[t]] = 
-      tbl(con,t) %>% 
-      filter(.unit == unit) %>% 
-      collect()
-  }
-  return(api_order) # Send back the request
-}
 
 
 
