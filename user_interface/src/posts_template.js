@@ -7,9 +7,13 @@ const PostTitle = ({ record }) => {
 };
 
 const Header = ({ variable }) => {
-    return(<div><h3>{variable}</h3>
-            <hr></hr></div>);
+    return(<div><hr></hr><h2>{variable}</h2></div>);
 }
+
+const Caption = ({ variable }) => {
+    return(<div><em>{variable}</em></div>);
+}
+
 
 export const PostEdit = (props) => (
     <Edit title={<PostTitle />} {...props}>

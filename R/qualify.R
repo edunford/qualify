@@ -262,9 +262,12 @@ generate_app = function(.data){
     tag = paste0(app_instances$.id[i],"_")
     js_code = gsub("XX_",tag,app_instances$code_map[i])
     var_name = app_instances$var_name[i]
+    caption = app_instances$caption[i]
     
     composit <- 
-      c(composit,paste0(paste0(rep("\t",7),collapse=''),'<Header variable="',var_name,'" />'),
+      c(composit,
+        paste0(paste0(rep("\t",7),collapse=''),'<Header variable="',var_name,'" />'),
+        paste0(paste0(rep("\t",7),collapse=''),'<Caption variable="',caption,'" />'),
         paste0(paste0(rep("\t",8),collapse=''),strsplit(js_code,split = "\n")[[1]]))
   }
   
