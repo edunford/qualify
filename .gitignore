@@ -5,6 +5,8 @@
 .Rprofile
 .Rproj
 
+/Data/test_db.sqlite
+
 # dependencies
 /user_interface/node_modules
 /user_interface/.pnp
@@ -26,5 +28,5 @@
 /user_interface/npm-debug.log*
 /user_interface/yarn-debug.log*
 /user_interface/yarn-error.log*
-/user_interface/api/plumber_compiled.js*
-/user_interface/src/posts_compiled.js*
+/user_interface/api/plumber_compiled.js
+/user_interface/src/posts_compiled.js
