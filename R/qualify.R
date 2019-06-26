@@ -12,20 +12,35 @@
 #'
 #' @param project_name 
 #' @param unit_of_analysis 
+#' @param project_path 
 #'
 #' @return
 #' @export
 #'
 #' @examples
 qualify = function(project_name = "test_db",
-                   unit_of_analysis = c("a","b","c","d")){
+                   project_path = "",
+                   unit_of_analysis = NULL){
   UseMethod("qualify")
 }
 
 #' @export
 qualify = function(project_name = "test_db",
-                   unit_of_analysis = c("a","b","c","d")){
-  out = list(project_name = project_name,unit_of_analysis = unit_of_analysis)
+                   project_path = "",
+                   unit_of_analysis = NULL){
+  out = list(project_name = project_name, unit_of_analysis = unit_of_analysis)
+  
+  # Establish path...
+  
+  # Save the unit of analysis as a lookup table in the SQL.
+  if(!is.null(unit_of_analysis)){
+    sql_instance(project_name) %>% 
+      dplyr::copy_to(dest = .,
+                     df=tibble(id=unit_of_analysis),
+                     name=".unit",overwrite=T,temporary=F) 
+  }
+  
+  # Establish qualify class
   class(out) = c(class(out),"qualify_obj")
   return(out)
 }
@@ -93,6 +108,7 @@ generate_module.qualify_obj =
   # Upload application instructions for proposed module.
   if(".input_state"  %in%  src_tbls(con)){
     current = dplyr::tbl(con,".input_state") %>% dplyr::select(-.id) %>% dplyr::collect() # Import the current input state
+    
     tibble::tibble(var_name = variable_name,
                    caption = caption,
                    code_map = map_input(...)) %>%
