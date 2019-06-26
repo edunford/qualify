@@ -13,7 +13,7 @@
 #' @param var_widths for fixed width fields
 #' @param level_widths for fixed width levels
 #' @param var_name the column name that contains all of the fields
-#' @param skip the number of lines to skip
+#' @param skip the number of lines to skip when reading in the .txt file
 #' @param ... 
 #'
 #' @return the codebook as a data frame with \code{levels} as an attribute. \code{levels} contains a list for each field that has its levels in a data frame
@@ -37,7 +37,7 @@ parse_codebook <- function(file,
   
   
   #Remove blank lines
-  blank_lines <- which(nchar(str_squish(codebook_raw)) == 0)
+  blank_lines <- which(nchar(stringr::str_squish(codebook_raw)) == 0)
   linenums <- which(!(substr(codebook_raw, 1, 1) %in% level_indent))
   linenums <- linenums[!linenums %in% blank_lines] #from raw codebook 
   linenums.levels <- which(substr(codebook_raw, 1, 1) %in% level_indent)
@@ -53,7 +53,7 @@ parse_codebook <- function(file,
   rows.levels <- which(substr(codebook_raw, 1, 1) %in% level_indent)
   rowmapping <- data.frame(pre=linenums, post=rows) #linenums are from raw codebook
   rowmapping.levels <- data.frame(pre=linenums.levels, post=rows.levels)
-  codebook <- str_squish(codebook_raw[rows])
+  codebook <- stringr::str_squish(codebook_raw[rows])
   
   if(!missing(var_sep)) { #Fields are delimited
     split <- strsplit(codebook, var_sep, fixed=TRUE)
@@ -61,7 +61,7 @@ parse_codebook <- function(file,
     codebook <- codebook[lapply(split, length) == length(var_names)] #no more bad rows!!!!
   
     
-    codebook <- as.data.frame(matrix(sapply(str_squish(codebook))
+    codebook <- as.data.frame(matrix(sapply(stringr::str_squish(codebook))
       ncol=length(var_names), byrow=TRUE, stringsAsFactors=FALSE)
     codebook$linenum <- rows
     
@@ -75,7 +75,7 @@ parse_codebook <- function(file,
     for(i in 1:length(var_widths)) {
       codebook.new[,var_names[i]] <- sapply(
         codebook, function(x) {
-          str_squish(substr(x, start=left_side_of_string, stop = min(nchar(x), (left_side_of_string + var_widths[i]))))
+          stringr::str_squish(substr(x, start=left_side_of_string, stop = min(nchar(x), (left_side_of_string + var_widths[i]))))
         })
       left_side_of_string <- left_side_of_string + var_widths[i]
     }
@@ -110,7 +110,7 @@ parse_codebook <- function(file,
       })
       
     } else if(exists("level_sep")) { #Delimited levels
-      levels.raw <- str_squish(levels.raw) 
+      levels.raw <- stringr::str_squish(levels.raw) 
     } else {
       stop('Specify  either level_sep or level_widths')
     }
@@ -119,7 +119,7 @@ parse_codebook <- function(file,
     levels.df <- data.frame(linenum=rowmapping.levels[rowmapping.levels$post > start &
                                                         rowmapping.levels$post < end, 'pre'])
     for(i in 1:length(level_names)) {
-      levels.df[,level_names[i]] <- sapply(levels.raw, FUN=function(x) { str_squish(x[i]) })
+      levels.df[,level_names[i]] <- sapply(levels.raw, FUN=function(x) { stringr::stringr::str_squish(x[i]) })
     }
 
     var <- codebook[codebook$linenum == rowmapping[start == rowmapping$post,'pre'], "var"]
