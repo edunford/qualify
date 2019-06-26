@@ -3,7 +3,7 @@ import { SelectInput, Edit, TextInput, TabbedForm, FormTab, DateInput, TextField
 import RichTextInput from 'ra-input-rich-text';
 
 const headerStyle= {
-    backgroundColor: "#4682b4",
+    backgroundColor: "#2196f3",
     padding: "0.5px 15px",
     color: "white"
 };
