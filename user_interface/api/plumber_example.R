@@ -70,8 +70,11 @@ function(pid){
 
 #' @put /posts/<pid>
 function(req){
+<<<<<<< HEAD
   entry = jsonlite::fromJSON(req$postBody)
   save(entry,file = "~/Desktop/test.Rdata")
+=======
+>>>>>>> 137d67c6fdc1737e85327079236384211e563f69
   jsonlite::fromJSON(req$postBody)
 }
 
