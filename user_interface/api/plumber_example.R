@@ -70,7 +70,8 @@ function(pid){
 
 #' @put /posts/<pid>
 function(req){
-  print(req$postBody)
-  write_rds(jsonlite::fromJSON(req$postBody),path = "~/Desktop/test.rds")
+  entry = jsonlite::fromJSON(req$postBody)
+  save(entry,file = "~/Desktop/test.Rdata")
   jsonlite::fromJSON(req$postBody)
 }
+
