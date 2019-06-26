@@ -1,0 +1,315 @@
+Common Core of Data, Local Education Agency Universe Survey, 2008-09
+
+FILE NAME = ag081a.txt, 2008-09 
+
+NVAR = 55
+
+NOBS = 18,350
+
+(*) Fields have one explicit decimal place, unless otherwise noted.
+
+(+) Fields represent sub-fields of the fields immediately preceding them.
+
+The file contains data for school year 2008–09, sorted by the NCES-assigned local education agency identification code (LEAID).
+Data presented in this release are available in two formats—SAS datasets (.sas7bdat) and tab-separated values text files (.txt).
+
+Note that starting with the 2002–03 CCD, all numeric fields contain a -1 to indicate missing and a -2 to indicate not applicable.
+Previously, numeric fields contained an “M” to indicate missing and an “N” to indicate not applicable. Character fields continue
+to use “M” for missing and “N” for not applicable.
+
+======================================================================================================================================
+Variable		Data
+Name		Order	Type	Description
+======================================================================================================================================
+LEAID		1	AN	NCES Local Education Agency ID.  The first two positions of this field are also the Federal 
+                                  Information Processing Standards (FIPS) state code.
+
+FIPST		2	AN	Federal Information Processing Standards (FIPS) state code. 
+                                01  =Alabama        02  =Alaska          04  =Arizona
+                                05  =Arkansas       06  =California      08  =Colorado
+                                09  =Connecticut    10  =Delaware        11  =District of Columbia
+                                12  =Florida        13  =Georgia         15  =Hawaii
+                                16  =Idaho          17  =Illinois        18  =Indiana
+                                19  =Iowa           20  =Kansas          21  =Kentucky
+                                22  =Louisiana      23  =Maine           24  =Maryland
+                                25  =Massachusetts  26  =Michigan        27  =Minnesota
+                                28  =Mississippi    29  =Missouri        30  =Montana
+                                31  =Nebraska       32  =Nevada          33  =New Hampshire
+                                34  =New Jersey     35  =New Mexico      36  =New York
+                                37  =North Carolina 38  =North Dakota    39  =Ohio
+                                40  =Oklahoma       41  =Oregon          42  =Pennsylvania
+                                44  =Rhode Island   45  =South Carolina  46  =South Dakota
+                                47  =Tennessee      48  =Texas           49  =Utah
+                                50  =Vermont        51  =Virginia        53  =Washington
+                                54  =West Virginia  55  =Wisconsin       56  =Wyoming
+                                58  =DOD Dependents Schools-Overseas    
+                                59  =Bureau of Indian Affairs
+                                60  =American Samoa 61  =DOD Dependents School-Domestic
+                                66  =Guam           69  =Northern Marianas
+                                72  =Puerto Rico    78  =Virgin Islands;
+
+STID08		3	AN	State’s own ID for the education agency. 
+
+NAME08		4	AN	Name of the education agency.
+
+				NOTE: Throughout the remainder of this file, the following codes may appear as representing missing  
+                                  values whenever they are present in the data or the documentation.
+
+				M: when alphanumeric data are missing; that is, a value is expected but none was measured.
+
+				-1: when numeric data are missing; that is, a value is expected but none was measured.
+
+				N: when alphanumeric data are not applicable; that is, a value is neither expected nor measured.
+
+				-2: when numeric data are not applicable; that is, a value is neither expected nor measured.
+
+PHONE08		5	AN	Telephone number of education agency. 
+
+MSTREE08	6	AN	Mailing address of the agency—may be a street address, a P.O. Box number, or, if there is no address  
+                                  beyond CITY, STATE, and ZIP, the character “N.”
+
+MCITY08		7	AN	Name of the agency mailing address city.
+
+MSTATE08	8	AN	Two-letter U.S. Postal Service abbreviation for the state where the mailing address is located.
+
+MZIP08		9	AN	Five-digit U.S. Postal Service ZIP code for the mailing address.
+
+MZIP408		10	AN	Four-digit ZIP+4, if assigned; if none, field is blank.
+
+LSTREE08	11	AN	Location address of agency. 
+
+LCITY08		12	AN	Location city of agency. 
+
+LSTATE08	13	AN	Location state (two-letter postal abbreviation).
+
+LZIP08		14	AN	Location 5-digit ZIP Code. 
+
+LZIP408		15	AN	Location +4 ZIP Code. 
+
+TYPE08		16	AN	Agency type code: 
+
+				1 = Regular local school district.  Locally governed agency responsible for providing free public  
+                                    elementary or secondary education; includes independent school districts and those that are a  
+                                    dependent segment of a local government such as a city or county.
+
+				2 = Local school district that is a component of a supervisory union.  Regular local school district  
+                                    that shares its superintendent and administrative services with other school districts participating  
+                                    in the supervisory union.
+
+				3 = Supervisory Union.  An education agency that performs administrative services for more than one  
+                                    school district, providing a common superintendent for participating districts.
+
+				4 = Regional Education Service Agency.  Agency providing specialized education services to a variety of  
+                                    local education agencies, or a county superintendent serving the same purposes.
+
+				5 = State-Operated Agency.  Agency that is charged, at least in part, with providing elementary and/or 
+                                    secondary instruction or support services. Includes the State Education Agency if this agency operates  
+                                    schools. Examples include elementary/secondary schools operated by the state for the deaf or blind;  
+                                    and programs operated by state correctional facilities. 
+
+				6 = Federally-Operated Agency.  A federal agency that is charged, at least in part, with providing  
+                                    elementary or secondary instruction or support services.
+
+				7 = Charter Agency.  All schools associated with the agency are charter schools. 
+
+				8 = Other Education Agency.  Agency providing elementary or secondary instruction or support services that  
+                                    does not fall within the definitions of agency types 1–7 
+
+UNION08		17	AN	Supervisory union number.  For supervisory union administrative centers and component agencies, this is  
+                                  a number assigned by the state to the union. Additionally, if the agency is a county superintendent,  
+                                  this is the FIPS county number. If no number was reported, the field will contain “000.”
+
+CONUM08		18	AN	FIPS county number (two digit FIPS state numeric code + three digits FIPS county code) based on the  
+                                  location of the administrative office. FIPS county number.
+
+CONAME08	19	AN	County name based on the location of the administrative office.
+
+CSA08		20	AN	Combined Statistical Area (CSA). The CSA assignment is based on the CSA assignments of schools  
+                                  associated with the agency, weighted by the number of students in each school. A CSA may comprise  
+                                  two or more metropolitan statistical areas, a metropolitan statistical area and a micropolitan  
+                                  statistical area, two or more micropolitan statistical areas, or multiple metropolitan and micropolitan  
+                                  statistical areas. If the school(s) used to weight the assignment are not within a CSA, the field will  
+                                  be assigned an "N" (not applicable).
+
+				  NOTE: Starting in 2006–07, this field contains the CSA code for all areas. Prior to 2006–07, this field  
+                                  contained the New England City and Town Areas (NECTA) codes for agencies in the New England States.
+
+CBSA08		21	AN	Core Based Statistical Area (CBSA). A value in this field indicates that the agency's address is associated  
+                                  with a recognized population nucleus and adjacent communities that have a high degree of integration  
+                                  with that nucleus, and designated by the U.S. Government as a metropolitan or micropolitan statistical  
+                                  area. The integration of adjacent communities is determined by the CBSAs of schools associated with the  
+                                  agency, weighted by the number of students in each school.  If the agency is not in any type of  
+                                  metropolitan/micropolitan statistical area the field contains an "N" (not applicable). 
+
+				  NOTE: Starting in 2006–07, this field contains the CBSA code for all areas. Prior to 2006–07, this  
+                                  field contained the NECTA codes for agencies in the New England States. This assignment was made using  
+                                  a file of FIPS county codes matched to CBSA codes. 
+
+METMIC08	22	AN	Indicates whether the CBSA is a metropolitan or micropolitan area.
+
+				0 = CBSA is equal to 70,300 or higher and does not have an associated type code. CBSA equal to 70,300 or  
+                                    higher is NECTA and is not denoted as metropolitan or micropolitan. 
+
+				1= CBSA is a metropolitan area.
+
+				2 = CBSA is a micropolitan area.
+
+ULOCAL08	23	AN	NCES urban-centric locale code.
+
+				NOTE: Starting in 2006–07, CCD data files contain a new locale code system that is based on the urbanity of  
+                                  the agency location. In prior years, the locale was assigned based on an agency's metro status.  
+                                  See appendix C, Glossary for more detail.
+
+				11 = City, Large Territory inside an urbanized area and inside a principal city with population of  
+                                     250,000 or more.
+
+				12 = City, Mid-size Territory inside an urbanized area and inside a principal city with a population  
+                                     less than 250,000 and greater than or equal to 100,000.
+
+				13 = City, Small Territory inside an urbanized area and inside a principal city with a population  
+                                     less than 100,000.
+
+				21 = Suburb, Large Territory outside a principal city and inside an urbanized area with population of  
+                                     250,000 or more.
+
+				22 = Suburb, Mid-size Territory outside a principal city and inside an urbanized area with a population  
+                                     less than 250,000 and greater than or equal to 100,000.
+
+				23 = Suburb, Small Territory outside a principal city and inside an urbanized area with a population  
+                                     less than 100,000. 
+
+				31 = Town, Fringe Territory inside an urban cluster that is less than or equal to 10 miles from an  
+                                     urbanized area.
+
+				32 = Town, Distant Territory inside an urban cluster that is more than 10 miles and less than or equal  
+                                     to 35 miles from an urbanized area.
+
+				33 = Town, Remote Territory inside an urban cluster that is more than 35 miles from an urbanized area.
+
+				41 = Rural, Fringe Census-defined rural territory that is less than or equal to 5 miles from an urbanized  
+                                     area, as well as rural territory that is less than or equal to 2.5 miles from an urban cluster.
+
+				42 = Rural, Distant Census-defined rural territory that is more than 5 miles but less than or equal to  
+                                     25 miles from an urbanized area, as well as rural territory that is more than 2.5 miles but less  
+                                     than or equal to 10 miles from an urban cluster.
+
+				43 = Rural, Remote Census-defined rural territory that is more than 25 miles from an urbanized area and  
+                                     is also more than 10 miles from an urban cluster
+
+CDCODE08	24	AN	Congressional district code based on location of administrative office. FIPS numeric code for the  
+                                  congressional districts that are legislatively defined subdivision of the state for the purpose of  
+                                  electing representatives to the House of Representative of the United States Congress. The first two  
+                                  digits are the FIPS state numeric code, which makes the congressional district code unique across states  
+                                  (see Appendix C Glossary for detail). If an agency serves more than one congressional district, the code  
+                                  represents the primary one.
+
+LATCOD08	25*	N	Latitude. Based on the location of the administrative office, the value of LATCOD ranges from 17 to 71.  
+                                  It contains an explicit decimal point. The digits to the left of the decimal represent the number of  
+                                  degrees from the equator; the digits to the right of the decimal represent the fraction of the next  
+                                  degree carried out to six decimal places.
+
+LONCOD08	26*	N	Longitude. Based on the location of the administrative office, the value of LONCOD ranges from -65 to -177.  
+                                  The minus sign (-) indicates west of the prime meridian. It contains an explicit decimal point. The digits  
+                                  to the left of the decimal point represent the number of degrees from the prime meridian; the digits to  
+                                  the right of the decimal point represent the fraction of the next degree carried out to six decimal places.
+
+BOUND08		27	AN	The boundary change indicator is a classification of changes in an education agency’s boundaries since the  
+                                  last report to NCES. The options are as follows:
+
+				1 = No significant boundary change for this agency since the last report.  Currently in operation.
+
+				2 = Education agency has closed with no effect on another agency’s boundaries. 
+
+				3 = This is a new education agency formed with no effect on another agency’s boundaries.
+
+				4 = Agency was in existence, but not reported in previous year’s CCD agency universe survey, and is  
+                                    now being added.
+
+				5 = Agency has undergone a significant change in geographic boundaries or instructional responsibility.
+
+				6 = Agency is temporarily closed and may reopen within 3 years.
+
+				7 = Agency is scheduled to be operational within 2 years.
+
+				8 = Agency was closed on previous year’s file but has reopened.
+
+GSLO08		28	AN	Agency low grade offered. If grade span data were not reported, this field was calculated from the low  
+                                  grade spans of the associated schools in the CCD school universe file.
+
+GSHI08		29	AN	Agency high grade offered. If grade span data were not reported, this field was calculated from the  
+                                  high grade spans of the associated schools in the CCD school universe file. When combined, GSLO and  
+                                  GSHI are the grade span of the school.
+
+SCH08		30	N	Aggregate number of schools associated with this agency in the CCD school universe file.
+
+UG08		31	N	Total number of students in classes or programs without standard grade   designations. 
+
+PK1208		32	N	Total number of students in classes from prekindergarten through 12th grade that are part of the public  
+                                  school program. 
+
+MEMBER08	33	N	Calculated total student membership of the local education agency: the sum of the fields UG and PK12. 
+
+SPECED08	34	N	Count of all students having a written Individualized Education Program (IEP) under the Individuals With  
+                                  Disabilities Education Act (IDEA), Part B.
+
+ELL08		35	N	The number of English language learner (ELL) students served in appropriate programs.
+
+PKTCH08		36*	N	Prekindergarten teachers. Full-time equivalency reported to the nearest tenth; field includes one explicit  
+                                  decimal.
+
+KGTCH08		37*	N	Kindergarten teachers. Full-time equivalency reported to the nearest tenth; field includes one explicit  
+                                  decimal. 
+
+ELMTCH08	38*	N	Elementary teachers. Full-time equivalency reported to the nearest tenth; field includes one explicit  
+                                  decimal. 
+
+SECTCH08	39*	N	Secondary teachers. Full-time equivalency reported to the nearest tenth; field includes one explicit  
+                                  decimal. 
+
+UGTCH08		40*	N	Teachers of classes or programs to which students are assigned without standard grade designation.  
+                                  Full-time equivalency reported to the nearest tenth; field includes one explicit decimal. 
+
+TOTTCH08	41*	N	Total teachers. Full-time equivalency reported to the nearest tenth; field includes one explicit decimal.
+
+AIDES08		42*	N	Instructional aides. Full-time equivalency reported to the nearest tenth; field includes one  
+                                  explicit decimal.
+
+CORSUP08	43*	N	Instructional coordinators & supervisors. Full-time equivalency reported to the nearest tenth;  
+                                  includes one explicit decimal.
+
+ELMGUI08	44*	N	Elementary guidance counselors. Full-time equivalency reported to the nearest tenth;  
+                                  includes one explicit decimal.
+
+SECGUI08	45*	N	Secondary guidance counselors. Full-time equivalency reported to the nearest tenth;  
+                                  field includes one explicit decimal.
+
+OTHGUI08	46*	N	Other guidance counselors. Full-time equivalency reported to the nearest tenth;  
+                                  field includes one explicit decimal.
+
+TOTGUI08	47*	N	Total guidance counselors. Full-time equivalency reported to the nearest tenth;  
+                                  field includes one explicit decimal.
+
+LIBSPE08	48*	N	Librarians/media specialists. Full-time equivalency reported to the nearest tenth;  
+                                  field includes one explicit decimal.
+
+LIBSUP08	49*	N	Library/media support staff. Full-time equivalency reported to the nearest tenth;  
+                                  field includes one explicit decimal.
+
+LEAADM08	50*	N	LEA administrators. Full-time equivalency reported to the nearest tenth;  
+                                  field includes one explicit decimal.
+
+LEASUP08	51*	N	LEA administrative support staff. Full-time equivalency reported to the nearest tenth;  
+                                  field includes one explicit decimal.
+
+SCHADM08	52*	N	School administrators. Full-time equivalency reported to the nearest tenth;  
+                                  field includes one explicit decimal.
+
+SCHSUP08	53*	N	School administrative support staff. Full-time equivalency reported to the nearest tenth;  
+                                  field includes one explicit decimal.
+
+STUSUP08	54*	N	Student support services staff. Full-time equivalency reported to the nearest tenth;  
+                                  field includes one explicit decimal.
+
+OTHSUP08	55*	N	All other support services staff. Full-time equivalency reported to the nearest tenth;  
+                                  field includes one explicit decimal.
+

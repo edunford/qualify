@@ -2,6 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+<<<<<<< HEAD
+=======
 .Rprofile
 .Rproj
 
@@ -30,3 +32,4 @@
 /user_interface/yarn-error.log*
 /user_interface/api/plumber_compiled.js
 /user_interface/src/posts_compiled.js
+>>>>>>> 6e3032434a00eedbb9f717d268e9cdd494486f41
