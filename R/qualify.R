@@ -80,13 +80,6 @@ sql_instance = function(db_name = "test_db") {
 #' @export
 #'
 #' @examples
-#' 
-#' generate_module(variable_name = "var_1",
-#'                 caption = "This variable is about this ...",
-#'                 evidence = text_field(), 
-#'                 note = text_field(), 
-#'                 publication_date = date_field(), 
-#'                 code_var = c(1,2,3,4))
 generate_module = function(.data,
                            variable_name = "",
                            caption = "",
@@ -109,31 +102,35 @@ generate_module.qualify_obj =
   if(".input_state"  %in%  src_tbls(con)){
     current = dplyr::tbl(con,".input_state") %>% dplyr::select(-.id) %>% dplyr::collect() # Import the current input state
     
-    tibble::tibble(var_name = variable_name,
-                   caption = caption,
-                   code_map = map_input(...)) %>%
+    state <- 
+      tibble::tibble(var_name = variable_name,
+                     caption = caption,
+                     code_map = map_input(...)) %>%
       dplyr::bind_rows(current) %>% 
       unique(.) %>% 
       {dplyr::mutate(.,.id = paste0("v",nrow(.):1))} %>% 
       dplyr::select(.,.id,dplyr::everything()) %>% 
-      dplyr::arrange(.id) %>% 
-      dplyr::copy_to(dest=con,df = ., name = ".input_state",overwrite = T,temporary = F)
+      dplyr::arrange(.id) 
+    dplyr::copy_to(dest=con,df = state, name = ".input_state",overwrite = T,temporary = F)
+    
   } else{
-    tibble::tibble(.id = "v1",
-                   var_name = variable_name,
-                   caption = caption,
-                   code_map = map_input(...)) %>% 
-      dplyr::copy_to(dest=con,df = ., name = ".input_state",overwrite = T,temporary = F)
+    state <- 
+      tibble::tibble(.id = "v1",
+                     var_name = variable_name,
+                     caption = caption,
+                     code_map = map_input(...)) 
+      dplyr::copy_to(dest=con,df = state, name = ".input_state",overwrite = T,temporary = F)
   }
   
   # Generate enmpy table for respective variable field
-  input = map_input(...)
-  names = sapply(stringr::str_split(stringr::str_split(input,";")[[1]]," = "),function(x) stringr::str_trim(x[1]))
-  entry = dplyr::as_tibble(matrix(-99,ncol = length(names)))
+  var_ind = state %>% dplyr::filter(var_name == variable_name) %>% .$.id
+  names = names(list(...))
+  entry = dplyr::as_tibble(matrix("",ncol = length(names)))
   colnames(entry) = names
   entry %>% 
     tidyr::crossing(tibble::tibble(.unit=unit),.) %>% 
-    dplyr::copy_to(dest=con,df = ., name = paste0("field_",variable_name),overwrite = T,temporary = F)
+    dplyr::mutate(timestamp = as.character(Sys.time())) %>% 
+    dplyr::copy_to(dest=con,df = ., name = var_ind,overwrite = T,temporary = F)
   
   return(invisible(.data)) # pass back initial qualify instructions (but can't see it)
 }

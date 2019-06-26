@@ -11,29 +11,56 @@ import_data_state <- function(.project_name = "test_db"){
   sql_instance(.project_name) %>%
     dplyr::tbl(".unit") %>%
     dplyr::collect()
+  
+  # ADD SUMMARY INFORMATION HERE...
 }
 
 
 api_data_call = function(unit = "",.project_name = "test_db"){
   con = sql_instance(.project_name)
-  all_tbls = grep("field_",dplyr::src_tbls(con),value = T)
-  api_order = as.list(rep(NA,length(all_tbls)))
-  names(api_order) = all_tbls
+  all_tbls = grep("v",dplyr::src_tbls(con),value = T)
+  api_order <- c()
   for(t in all_tbls){
-    api_order[[t]] =
-      dplyr::tbl(con,t) %>%
+    dplyr::tbl(con,t) %>%
       dplyr::filter(.unit == unit) %>%
-      dplyr::collect() %>%
-      dplyr::rename(id = .unit)
+      dplyr::arrange(desc(timestamp)) %>% 
+      dplyr::select(-.unit) %>% 
+      dplyr::collect() %>% 
+      dplyr::slice(1) %>% 
+      {colnames(.) = paste0(t,"_",colnames(.));.} %>% 
+      dplyr::bind_cols(api_order,.) -> api_order
   }
-  return(api_order) # Send back the request
+  api_order$id = unit
+  return(as.data.frame(api_order)) # Send back the request
+}
+
+
+upload_data = function(entry,.project_name = "test_db"){
+  # Process entry records for resubmission into the data element. 
+  id = entry$id 
+  entry["id"] = NULL
+  tags = stringr::str_remove_all(stringr::str_extract_all(names(entry),"v\\d_",simplify = T),"_") 
+  vars = stringr::str_remove_all(names(entry),"v\\d_")
+  to_record <- 
+    tibble::tibble(.tag = tags,vars,entry = unlist(entry,use.names = F)) %>% 
+    tidyr::spread(vars,entry) %>% 
+    dplyr::mutate(.unit=id)
+  
+  # Loop through tags and draw out relevant features
+  for(t in to_record$.tag){
+    tmp = to_record %>% 
+      dplyr::filter(.tag == t) %>%
+      dplyr::select(-.tag) %>% 
+      dplyr::mutate(timestamp = as.character(Sys.time()))
+    
+    # Append to existing data frame
+    con = sql_instance(.project_name)
+    DBI::dbWriteTable(conn=con$con, name = t, value = tmp,append=T) 
+  }
 }
 
 
 # Plumber API Features ----------------------------------------------------
-
-# Call all Available Units.
-master_data <- import_data_state()
 
 #' @filter cors
 cors <- function(req, res) {
@@ -54,8 +81,7 @@ cors <- function(req, res) {
 #* A test endpoint for providing dummy data
 #' @get /posts
 function(req, res){
-#  stuff <- list(title=title, gender=dropdown)
-#  print(stuff)
+  master_data <- import_data_state()
   res$setHeader("Access-Control-Expose-Headers", "X-Total-Count")
   res$setHeader("X-Total-Count", nrow(master_data))
   master_data
@@ -65,12 +91,13 @@ function(req, res){
 #' @get /posts/<pid>
 function(pid){
   # jsonlite::unbox(.data[.data$id==pid,])
-  jsonlite::unbox(as.data.frame(api_data_call(unit = pid)$field_var_1))
+  jsonlite::unbox(api_data_call(unit = pid))
 }
 
 #' @put /posts/<pid>
 function(req){
   entry = jsonlite::fromJSON(req$postBody)
-  save(entry,file = "~/Desktop/test.Rdata")
+  # save(entry,file = "~/Desktop/test.Rdata")
+  upload_data(entry)
   jsonlite::fromJSON(req$postBody)
 }
