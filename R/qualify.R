@@ -169,7 +169,7 @@ drop_module.qualify_obj = function(.data,variable_name){
 #' @export
 #'
 #' @examples
-field_date = function(){'<DateInput source= "XXXXX" />'}
+field_date = function(){'<DateInput source= "XXXXX" label="YYYYY" />'}
 
 
 #' field_text
@@ -182,7 +182,7 @@ field_date = function(){'<DateInput source= "XXXXX" />'}
 #' @export
 #'
 #' @examples
-field_text = function(){'<TextInput source= "XXXXX" />'}
+field_text = function(){'<TextInput source= "XXXXX" label="YYYYY" />'}
 
 
 #' field_dropdown
@@ -194,7 +194,7 @@ field_text = function(){'<TextInput source= "XXXXX" />'}
 #'
 #' @examples
 field_dropdown = function(inputs = c()){
-  paste0('<SelectInput source= "XXXXX" choices={[',paste0("{ id: '",inputs,"'}",collapse = ","),"]} />")
+  paste0('<SelectInput source= "XXXXX" label="YYYYY" choices={[',paste0("{ id: '",inputs,"', name: '",inputs,"'}",collapse = ","),"]} />")
 }
 
 
@@ -230,16 +230,22 @@ map_input = function(con,...){
 #' @return js code snippet with the appropriate source name
 #'
 #' @examples
-populate_source = function(source_name="",expr){gsub("XXXXX",source_name,expr)}
+populate_source = function(source_name="",expr){
+  expr = gsub("YYYYY",source_name,expr)
+  gsub("XXXXX",paste0("XX_",source_name),expr)
+}
 
   
 
 
 #' generate_app
+#' 
+#' Function compiles the JS code. 
 #'
 #' @param .data 
 #'
 #' @return
+#' @importFrom magrittr "%>%"
 #' @export
 #'
 #' @examples
@@ -253,12 +259,13 @@ generate_app = function(.data){
   
   composit = c()
   for(i in 1:nrow(app_instances)){
-    js_code = app_instances$code_map[i]
+    tag = paste0(app_instances$.id[i],"_")
+    js_code = gsub("XX_",tag,app_instances$code_map[i])
     var_name = app_instances$var_name[i]
     
     composit <- 
-      c(composit,paste0('<Header variable="',var_name,'" />'),
-        strsplit(app_instances$code_map,split = "\n")[[1]])
+      c(composit,paste0(paste0(rep("\t",7),collapse=''),'<Header variable="',var_name,'" />'),
+        paste0(paste0(rep("\t",8),collapse=''),strsplit(js_code,split = "\n")[[1]]))
   }
   
   
@@ -274,5 +281,4 @@ generate_app = function(.data){
 
 
 
-# qualify() %>% generate_app()
 
