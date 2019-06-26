@@ -2,3 +2,34 @@
 .Rhistory
 .RData
 .Ruserdata
+<<<<<<< HEAD
+=======
+.Rprofile
+.Rproj
+
+/Data/test_db.sqlite
+
+# dependencies
+/user_interface/node_modules
+/user_interface/.pnp
+/user_interface.pnp.js
+
+# testing
+/user_interface/coverage
+
+# production
+/user_interface/build
+
+# misc
+/user_interface/.DS_Store
+/user_interface/.env.local
+/user_interface/.env.development.local
+/user_interface/.env.test.local
+/user_interface/.env.production.local
+
+/user_interface/npm-debug.log*
+/user_interface/yarn-debug.log*
+/user_interface/yarn-error.log*
+/user_interface/api/plumber_compiled.js
+/user_interface/src/posts_compiled.js
+>>>>>>> 6e3032434a00eedbb9f717d268e9cdd494486f41
