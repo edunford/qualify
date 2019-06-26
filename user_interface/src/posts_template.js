@@ -8,6 +8,18 @@ const headerStyle= {
     color: "white"
 };
 
+const progressStyle = (progress) => ({
+    width: progress,
+    height: "15px",
+    backgroundColor: "green"
+});
+
+const wrapperStyle = {
+    height: "15px",
+    width: "50%",
+    backgroundColor: "#e2e2e2"
+};
+
 const PostTitle = ({ record }) => {
     return <span>Post {record ? `"${record.title}"` : ''}</span>;
 };
@@ -16,11 +28,18 @@ const Header = ({ header, caption }) => {
     return(<div style={headerStyle}><h2>{header}</h2><h4>{caption}</h4></div>);
 }
 
+const ProgressBar = ({ source, record = {} }) => {
+    const progress = record[source]*100+"%";
+    return(<div style={wrapperStyle}>
+              <div style={progressStyle(progress)}></div>
+           </div>);
+}
+
 export const PostList = props => (
     <List {...props}>
         <Datagrid rowClick="edit">
             <TextField source="id" name="Unit of Analysis" />
-            <TextField source="Progress" />
+            <ProgressBar source="Progress" />
         </Datagrid>
     </List>
 );
