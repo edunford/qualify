@@ -26,11 +26,12 @@ qualify = function(project_name = "test_db",
 
 #' @export
 qualify = function(project_name = "test_db",
-                   project_path = "",
+                   project_path = "~/Desktop/test_project",
                    unit_of_analysis = NULL){
   out = list(project_name = project_name, unit_of_analysis = unit_of_analysis)
   
-  # Establish path...
+  # Create project directory
+  if(!file.exists(project_path)){dir.create(project_path)}
   
   # Save the unit of analysis as a lookup table in the SQL.
   if(!is.null(unit_of_analysis)){
@@ -279,8 +280,7 @@ generate_app = function(.data){
     
     composit <- 
       c(composit,
-        paste0(paste0(rep("\t",7),collapse=''),'<Header variable="',var_name,'" />'),
-        paste0(paste0(rep("\t",7),collapse=''),'<Caption variable="',caption,'" />'),
+        paste0(paste0(rep("\t",7),collapse=''),'<Header header="',var_name,'" caption="',caption,'" />'),
         paste0(paste0(rep("\t",8),collapse=''),strsplit(js_code,split = "\n")[[1]]))
   }
   
