@@ -321,26 +321,44 @@ import_data_state <- function(.project_path = "",empty_value_placeholder=""){
   con = sql_instance(.project_path) 
   all_tbls = grep("v", dplyr::src_tbls(con),value = T)
   report = c()
+  ts_tracker = c()
   for ( t in all_tbls){
+    
     # Draw out the most recent entry from the data folder
-    report <-
+    tmp <-
       dplyr::tbl(con,t) %>% 
       dplyr::collect() %>% 
       dplyr::group_by(.unit) %>% 
       dplyr::arrange(desc(timestamp)) %>% 
       dplyr::slice(1) %>% 
-      dplyr::ungroup() %>% 
+      dplyr::ungroup()
+    
+    # Build timestamp tracker
+    ts_tracker <- dplyr::bind_rows(ts_tracker,dplyr::transmute(tmp,id = .unit,timestamp))
+    
+    #Generate report 
+    report <- 
+      tmp %>% 
       dplyr::select(-timestamp) %>% 
       dplyr::bind_rows(report,.)
   }
   
   # return the data state with a progress report
-  report %>% 
+  current_state <-
+    report %>% 
     dplyr::group_by(.unit) %>% 
     tidyr::nest() %>% 
     dplyr::mutate(progress = map(data,function(x) sum(rowSums(x == empty_value_placeholder) < ncol(x))/nrow(x))) %>% 
     tidyr::unnest(progress) %>% 
     dplyr::select(id = .unit, Progress = progress)
+  
+  # Map on last updated and return data
+  ts_tracker %>% 
+    dplyr::group_by(id) %>% 
+    dplyr::arrange(timestamp) %>% 
+    dplyr::slice(1) %>% 
+    dplyr::rename(`Last Update` = timestamp) %>% 
+    dplyr::left_join(current_state,.)
 }
 
 
@@ -386,6 +404,7 @@ upload_data = function(entry,.project_path = ""){
   id = entry$id 
   entry["id"] = NULL
   entry["Progress"] = NULL
+  entry["Last Update"] = NULL
   tags = stringr::str_remove_all(stringr::str_extract_all(names(entry),"v\\d_",simplify = T),"_") 
   vars = stringr::str_remove_all(names(entry),"v\\d_")
   to_record <- 

@@ -48,6 +48,7 @@ export const PostList = props => (
         <Datagrid rowClick="edit">
             <TextField source="id" label="Unit of Analysis" />
             <ProgressBar source="Progress" />
+            <TextField source="Last Update" />
         </Datagrid>
     </List>
 );
