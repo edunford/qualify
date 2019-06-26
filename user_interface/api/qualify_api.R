@@ -1,19 +1,49 @@
 # Qualify Database API
+
 source(here::here("R/qualify.R"))
 require(tidyverse)
 
 
 # Main Function Calls -----------------------------------------------------
 
-import_data_state <- function(.project_name = "test_db"){
-  sql_instance(.project_name) %>%
-    dplyr::tbl(".unit") %>%
-    dplyr::collect()
+
+#' import_data_state
+#'
+#' @param .project_name initial name of the data_base build.
+#'
+#' @return exports all units along with the current state of the projec
+import_data_state <- function(.project_name = "test_db",empty_value_placeholder=""){
+  con = sql_instance(.project_name) 
+  all_tbls = grep("v",dplyr::src_tbls(con),value = T)
+  report = c()
+  for ( t in all_tbls){
+    report <-
+      tbl(con,t) %>% 
+      collect() %>% 
+      group_by(.unit) %>% 
+      arrange(desc(timestamp)) %>% 
+      slice(1) %>% 
+      ungroup %>% 
+      select(-timestamp) %>% 
+      bind_rows(report,.)
+  }
   
-  # ADD SUMMARY INFORMATION HERE...
+  # return the data state with a progress report
+  report %>% 
+    group_by(.unit) %>% 
+    nest() %>% 
+    mutate(progress = map(data,function(x) sum(rowSums(x == empty_value_placeholder) < ncol(x))/nrow(x))) %>% 
+    unnest(progress) %>% 
+    select(id = .unit, Progress = progress)
 }
 
 
+#' api_data_call
+#'
+#' @param unit 
+#' @param .project_name 
+#'
+#' @return
 api_data_call = function(unit = "",.project_name = "test_db"){
   con = sql_instance(.project_name)
   all_tbls = grep("v",dplyr::src_tbls(con),value = T)
@@ -33,10 +63,17 @@ api_data_call = function(unit = "",.project_name = "test_db"){
 }
 
 
+#' upload_data
+#'
+#' @param entry 
+#' @param .project_name 
+#'
+#' @return
 upload_data = function(entry,.project_name = "test_db"){
   # Process entry records for resubmission into the data element. 
   id = entry$id 
   entry["id"] = NULL
+  entry["Progress"] = NULL
   tags = stringr::str_remove_all(stringr::str_extract_all(names(entry),"v\\d_",simplify = T),"_") 
   vars = stringr::str_remove_all(names(entry),"v\\d_")
   to_record <- 

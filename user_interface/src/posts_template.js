@@ -19,7 +19,8 @@ const Header = ({ header, caption }) => {
 export const PostList = props => (
     <List {...props}>
         <Datagrid rowClick="edit">
-            <TextField source="id" />
+            <TextField source="id" name="Unit of Analysis" />
+            <TextField source="Progress" />
         </Datagrid>
     </List>
 );
