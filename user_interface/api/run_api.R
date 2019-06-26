@@ -1,6 +1,2 @@
-# Wrapper to run the plumber api
-library(plumber)
-library(here)
-
-r <- plumb(here("user_interface/api/plumber_example.R"))
-r$run(port=8000)
+# Run qualify API
+plumber::plumb(here::here("user_interface/api/qualify_api.R"))$run(port=8000)

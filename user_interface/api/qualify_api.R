@@ -1,8 +1,6 @@
-# Temp API
-
+# Qualify Database API
 source(here::here("R/qualify.R"))
 require(tidyverse)
-
 
 
 # Main Function Calls -----------------------------------------------------
@@ -90,14 +88,12 @@ function(req, res){
 #* An endpoint for getting specific records
 #' @get /posts/<pid>
 function(pid){
-  # jsonlite::unbox(.data[.data$id==pid,])
   jsonlite::unbox(api_data_call(unit = pid))
 }
 
 #' @put /posts/<pid>
 function(req){
   entry = jsonlite::fromJSON(req$postBody)
-  # save(entry,file = "~/Desktop/test.Rdata")
   upload_data(entry)
   jsonlite::fromJSON(req$postBody)
 }
