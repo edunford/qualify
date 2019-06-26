@@ -21,7 +21,7 @@ const wrapperStyle = {
 };
 
 const PostTitle = ({ record }) => {
-    return <span>Post {record ? `"${record.title}"` : ''}</span>;
+    return <span>{record.id}</span>;
 };
 
 const Header = ({ header, caption }) => {
@@ -35,8 +35,16 @@ const ProgressBar = ({ source, record = {} }) => {
            </div>);
 }
 
+const PostEditToolbar = props => (
+    <Toolbar {...props} >
+        <SaveButton
+            undoable={false}
+        />
+    </Toolbar>
+);
+
 export const PostList = props => (
-    <List {...props}>
+    <List bulkActions={false} exporter={false} {...props}>
         <Datagrid rowClick="edit">
             <TextField source="id" label="Unit of Analysis" />
             <ProgressBar source="Progress" />
@@ -46,7 +54,7 @@ export const PostList = props => (
 
 export const PostEdit = (props) => (
     <Edit title={<PostTitle />} undoable={false} {...props}>
-        <TabbedForm>
+        <TabbedForm toolbar={<PostEditToolbar />}>
             <FormTab label="Coding">
                 XXXXX
             </FormTab>
