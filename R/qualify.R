@@ -439,7 +439,6 @@ upload_data = function(entry,.project_path = ""){
 # (Only optimized for a single coder at the moment)
 
 
-
 #' pull_timeline
 #' 
 #' Pull in timeline information about the coding timeline.
@@ -450,30 +449,49 @@ upload_data = function(entry,.project_path = ""){
 #' @export
 #'
 #' @examples
-pull_timeline = function(.project_path){
-  
+pull_timeline = function(.project_path,round_date = "minute"){
+  if(dir.exists(.project_path) & check_db_exists(.project_path)){
+    con = sql_instance(.project_path) 
+    all_tbls = grep("v", dplyr::src_tbls(con),value = T)
+    data_summary = c()
+    
+    for (t in all_tbls){
+      # Get the variable name
+      var_name =  dplyr::tbl(con,".input_state") %>% 
+        dplyr::filter(.id == t) %>% 
+        dplyr::collect() %>% .$var_name
+      
+      # Extract the data state
+      data_summary <-
+        dplyr::tbl(con,t) %>% 
+        dplyr::collect() %>% 
+        dplyr::mutate(timestamp = lubridate::round_date(lubridate::ymd_hms(timestamp),unit = round_date),
+                      variable = var_name) %>% 
+        dplyr::group_by(timestamp,.unit,variable) %>% 
+        tidyr::nest() %>% 
+        dplyr::mutate(is_entry = purrr::map(data,function(x) (apply(x,1,function(x) as.numeric(sum(x=="") < length(x)))) )) %>%
+        tidyr::unnest() %>% 
+        dplyr::filter(is_entry==1) %>% 
+        dplyr::group_by(timestamp,variable) %>% 
+        dplyr::count() %>% 
+        dplyr::ungroup() %>% 
+        dplyr::bind_rows(data_summary,.)
+    }
+    return(data_summary)
+  } else{
+    cat("\nNo qualify database located in the provide path.\n")
+  }
 } 
 
-
-#' pull_coders
-#'
-#' @param .project_path 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-pull_coders = function(.project_path){
-  
-} 
-
+dd = "2019-06-27 01:22:35"
+lubridate::round_date(lubridate::ymd_hms(dd),unit = "second")
 
 #' pull_data
 #'
 #' Posterior function that call from the data base to make a distinct data frame
-#' with all fields from all coded variables. The function allows users to draw
-#' the most recent state of the coding task to convert into a usable data frame
-#' for analysis
+#' that contains all fields from all coded variables from the application. The
+#' function allows users to draw the most recent state of the coding task to
+#' convert into a usable data frame for analysis
 #'
 #' @param .project_path
 #'
@@ -481,7 +499,7 @@ pull_coders = function(.project_path){
 #' @export
 #'
 #' @examples
-#' 
+#'
 #' # Must point to the project path created by qualify()
 #' pull_data(.project_path = "~/Desktop/test_project/")
 #' 
@@ -517,7 +535,6 @@ pull_data = function(.project_path = ""){
 } 
 
 
-
 #' check_db_exists
 #' 
 #' [Aux.] Check if a data base file exist
@@ -525,7 +542,6 @@ pull_data = function(.project_path = ""){
 #' @param path 
 #'
 #' @return
-#' @export
 #'
 #' @examples
 #' 

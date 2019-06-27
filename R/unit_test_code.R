@@ -46,3 +46,24 @@ qualify() %>% drop_module("var_1") %>% drop_module("var_2")
 
 
 
+
+# Posterior functions -----------------------------------------------------
+
+# Pull timeline of data entries 
+pull_timeline("~/Desktop/test_project/",round_date = "second")
+
+    # Various time dates work
+    pull_timeline("~/Desktop/test_project/",round_date = "minute")
+    
+    pull_timeline("~/Desktop/test_project/",round_date = "month")
+
+# Pull workable data frame from existing project
+pull_data("~/Desktop/test_project/") 
+
+    # Curation example: converting output into a usable data object. 
+    pull_data("~/Desktop/test_project/") %>% 
+      select(country = .unit, variable,code) %>% 
+      mutate(code = as.numeric(code)) %>% 
+      spread(variable,code,fill = 0) 
+
+
