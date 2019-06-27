@@ -203,7 +203,13 @@ field_date = function(){'<DateInput source= "XXXXX" label="YYYYY" />'}
 #' @export
 #'
 #' @examples
-field_text = function(){'<TextInput source= "XXXXX" label="YYYYY" />'}
+field_text = function(rich=F){
+  if(rich){
+    '<RichTextInput source= "XXXXX" label="YYYYY" />' 
+  }else{
+    '<TextInput source= "XXXXX" label="YYYYY" />'  
+  }
+}
 
 
 #' field_dropdown
@@ -291,7 +297,8 @@ generate_app = function(.data){
     composit <- 
       c(composit,
         paste0(paste0(rep("\t",7),collapse=''),'<Header header="',var_name,'" caption="',caption,'" />'),
-        paste0(paste0(rep("\t",8),collapse=''),strsplit(js_code,split = "\n")[[1]]))
+        paste0(paste0(rep("\t",8),collapse=''),strsplit(js_code,split = "\n")[[1]]),
+        paste0(paste0(rep("\t",8),collapse=''),"<Space />"))
   }
   
   
@@ -358,7 +365,7 @@ import_data_state <- function(.project_path = "",empty_value_placeholder=""){
     dplyr::arrange(timestamp) %>% 
     dplyr::slice(1) %>% 
     dplyr::rename(`Last Update` = timestamp) %>% 
-    dplyr::left_join(current_state,.)
+    dplyr::left_join(current_state,.,by = "id")
 }
 
 

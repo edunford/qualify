@@ -2,16 +2,20 @@ import React from 'react';
 import { SelectInput, Edit, TextInput, TabbedForm, FormTab, DateInput, TextField , List, Datagrid, Toolbar, SaveButton} from 'react-admin';
 import RichTextInput from 'ra-input-rich-text';
 
+// Methods
 const headerStyle= {
     backgroundColor: "#2196f3",
-    padding: "0.5px 15px",
-    color: "white"
+    padding: "1px 15px",
+    color: "white",
+    opacity: .6,
+    boxShadow: `1.5px 3px 1.5px lightgrey`
 };
 
 const progressStyle = (progress) => ({
     width: progress,
     height: "15px",
-    backgroundColor: "green"
+    backgroundColor: "forestgreen",
+    opacity: .7,
 });
 
 const wrapperStyle = {
@@ -25,7 +29,7 @@ const PostTitle = ({ record }) => {
 };
 
 const Header = ({ header, caption }) => {
-    return(<div style={headerStyle}><h2>{header}</h2><h4>{caption}</h4></div>);
+    return(<div style={headerStyle}><h3>{header}</h3><em>{caption}</em></div>);
 }
 
 const ProgressBar = ({ source, record = {} }) => {
@@ -33,6 +37,10 @@ const ProgressBar = ({ source, record = {} }) => {
     return(<div style={wrapperStyle}>
               <div style={progressStyle(progress)}></div>
            </div>);
+}
+
+const Space = ({ }) => {
+  return(<div><br></br><br></br></div>);
 }
 
 const PostEditToolbar = props => (
@@ -53,6 +61,8 @@ export const PostList = props => (
     </List>
 );
 
+
+// Main Application
 export const PostEdit = (props) => (
     <Edit title={<PostTitle />} undoable={false} {...props}>
         <TabbedForm toolbar={<PostEditToolbar />}>
