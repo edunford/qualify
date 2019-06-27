@@ -8,19 +8,16 @@ const styles = {
         flex: 1,
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-        overflow: 'hidden',
+        overflow: 'hidden'
     },
     spacer: {
         flex: 1,
-    },
-    a: {
-        textDecoration: 'none'
     }
 };
 
 const MyAppBar = withStyles(styles)(({ classes, ...props }) => (
     <AppBar {...props}>
-
+        <Typography variant="title"><a href="/" style={{textDecoration: 'none', color: 'white'}}>Qualify</a></Typography>
         <span className={classes.spacer} />
     </AppBar>
 ));
