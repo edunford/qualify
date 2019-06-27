@@ -1,0 +1,255 @@
+---
+title: "Codebook"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    code_folding: 'hide'
+    self_contained: true
+  pdf_document:
+    toc: yes
+    toc_depth: 4
+    latex_engine: xelatex
+---
+
+
+```{r setup}
+knitr::opts_chunk$set(
+  warning = FALSE, # show warnings during codebook generation
+  message = FALSE, # show messages during codebook generation
+  error = TRUE, # do not interrupt codebook generation in case of errors,
+                # usually better for debugging
+  echo = FALSE,  # show R code
+  comment=NA #to remove all hashes from output
+)
+ggplot2::theme_set(ggplot2::theme_bw())
+pander::panderOptions("table.split.table", Inf)
+```
+
+
+
+```{r prepare_codebook}
+library(codebook)
+codebook_data<-read.csv(("https://raw.githubusercontent.com/edunford/qualify/master/Data/example_pull_data_w_2users.csv"), header=TRUE)
+
+
+
+#Code on lines 39:60 are intended to create sample data for exhibition purposes only. They should be removed prior to relase of the package. 
+codebook_data$code<- rpois(n = 24, lambda = 10)
+codebook_data$count<-runif(n = 24, min = 25, max = 3000)
+rdate <- function(x,
+                  min = paste0(format(Sys.Date(), '%Y'), '-01-01'),
+                  max = paste0(format(Sys.Date(), '%Y'), '-12-31'),
+                  sort = TRUE) {
+
+  dates <- sample(seq(as.Date(min), as.Date(max), by = "day"), x, replace = TRUE)
+  if (sort == TRUE) {
+    sort(dates)
+  } else {
+    dates
+  }
+
+}
+codebook_data$date<-rdate(24)
+
+
+codebook_data$evid<-sample(x = c("aa", "ba", "bb", "ac", "cc", "bc"), 
+       prob = c(.1, .1, .2, .05, .25, .3),
+       size = 24, 
+       replace = TRUE)
+
+# omit the following lines, if your missing values are already properly labelled
+codebook_data <- detect_missing(codebook_data,
+    only_labelled = TRUE, # only labelled values are autodetected as
+                                   # missing
+    negative_values_are_missing = FALSE, # negative values are missing values
+    ninety_nine_problems = TRUE   # 99/999 are missing values, if they
+                                   # are more than 5 MAD from the median
+    )
+
+# If you are not using formr, the codebook package needs to guess which items
+# form a scale. The following line finds item aggregates with names like this:
+# scale = scale_1 + scale_2R + scale_3R
+# identifying these aggregates allows the codebook function to
+# automatically compute reliabilities.
+# However, it will not reverse items automatically.
+codebook_data <- detect_scales(codebook_data)
+```
+
+
+
+
+```{r codebook}
+codebook(codebook_data)
+
+```
+
+
+##Inter Coder Reliability
+  The data coded is assumed to be categorical. Different reliability tests would be more appropriate for ordinal/interval/ratio data.
+```{r}
+#This code formats the ICR dataset a MxK dataframe where m is number of coders, and K is are unique unit of analysis/variable pairs. 
+library("irr")
+library("tidyverse")
+irc_variables<-c(".user", "variableID", "code")
+codebook_dataunite<- unite(codebook_data, variable, .unit, col="variableID")
+trunc_codebook_data<-codebook_dataunite[irc_variables]
+icr_data<-spread(trunc_codebook_data, variableID,code, fill=NA, convert=FALSE, drop=TRUE, sep=NULL)
+#flipping the table to KxM
+icr_transpose <- as.data.frame(t(as.matrix(icr_data)))
+icr_trans<- icr_transpose[-1,]
+```
+
+###*Fleiss' Kappa* for categorical data
+```{r}
+#These tests were selected because data was assumed to be categorical and non-ordinal
+print(kappam.fleiss(icr_trans, exact=TRUE, detail=TRUE))
+
+```
+###*Light's Kappa* for categorical data
+```{r}
+
+print(kappam.light(icr_trans))
+
+```
+
+###*Coefficient of Rater Bias* for categorical data, between two raters
+
+```{r}
+rater.bias(icr_trans)
+
+```
+
+
+```{r}
+# Posterior Functions -- Pulled from qualify.r --------------------------------------------------
+
+# Pull data out of the data base. 
+# (Only optimized for a single coder at the moment)
+
+
+#' pull_timeline
+#' 
+#' Pull in timeline information about the coding timeline.
+#'
+#' @param .project_path 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+pull_timeline = function(.project_path,round_date = "minute"){
+  if(dir.exists(.project_path) & check_db_exists(.project_path)){
+    con = sql_instance(.project_path) 
+    all_tbls = grep("v", dplyr::src_tbls(con),value = T)
+    data_summary = c()
+    
+    for (t in all_tbls){
+      # Get the variable name
+      var_name =  dplyr::tbl(con,".input_state") %>% 
+        dplyr::filter(.id == t) %>% 
+        dplyr::collect() %>% .$var_name
+      
+      # Extract the data state
+      data_summary <-
+        dplyr::tbl(con,t) %>% 
+        dplyr::collect() %>% 
+        dplyr::mutate(timestamp = lubridate::round_date(lubridate::ymd_hms(timestamp),unit = round_date),
+                      variable = var_name) %>% 
+        dplyr::group_by(timestamp,.unit,variable) %>% 
+        tidyr::nest() %>% 
+        dplyr::mutate(is_entry = purrr::map(data,function(x) (apply(x,1,function(x) as.numeric(sum(x=="") < length(x)))) )) %>%
+        tidyr::unnest() %>% 
+        dplyr::filter(is_entry==1) %>% 
+        dplyr::group_by(timestamp,variable) %>% 
+        dplyr::count() %>% 
+        dplyr::ungroup() %>% 
+        dplyr::bind_rows(data_summary,.)
+    }
+    return(data_summary)
+  } else{
+    cat("\nNo qualify database located in the provide path.\n")
+  }
+} 
+
+
+#' pull_data
+#'
+#' Posterior function that call from the data base to make a distinct data frame
+#' that contains all fields from all coded variables from the application. The
+#' function allows users to draw the most recent state of the coding task to
+#' convert into a usable data frame for analysis
+#'
+#' @param .project_path
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' # Must point to the project path created by qualify()
+#' pull_data(.project_path = "~/Desktop/test_project/")
+#' 
+pull_data = function(.project_path = ""){
+  if(dir.exists(.project_path) & check_db_exists(.project_path)){
+    con = sql_instance(.project_path) 
+    all_tbls = grep("v", dplyr::src_tbls(con),value = T)
+    data_summary = c()
+    
+    for (t in all_tbls){
+      # Get the variable name
+      var_name =  dplyr::tbl(con,".input_state") %>% 
+        dplyr::filter(.id == t) %>% 
+        dplyr::collect() %>% .$var_name
+      
+      # Extract the data state
+      data_summary <-
+        dplyr::tbl(con,t) %>% 
+        dplyr::collect() %>% 
+        dplyr::group_by(.unit) %>% 
+        dplyr::arrange(desc(timestamp)) %>% 
+        dplyr::slice(1) %>% 
+        dplyr::ungroup() %>% 
+        dplyr::mutate(variable = var_name) %>% 
+        select(variable,.unit,timestamp,dplyr::everything()) %>% 
+        dplyr::bind_rows(data_summary,.) 
+    }
+    return(data_summary)
+  } else{
+    cat("\nNo qualify database located in the provide path.\n")
+  }
+  
+} 
+
+
+#' check_db_exists
+#' 
+#' [Aux.] Check if a data base file exist
+#'
+#' @param path 
+#'
+#' @return
+#'
+#' @examples
+#' 
+#' check_db_exists()
+#' 
+check_db_exists = function(.project_path = ""){
+  set_path = paste0(path,"/.qualify_data.sqlite")
+  file.exists(set_path)
+}           
+
+
+
+
+
+
+
+
+````
+
+
+
+
+
