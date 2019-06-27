@@ -1,24 +1,10 @@
 Package: qualify
 Title: qualify
 Version: 0.0.0.9000
-Authors@R:
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com")
-    person(given = "First",
-          family = "Last",
-          role = c("aut", "cre"),
-          email = "first.last@example.com")
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com"),
-    person(given = "First",
-          family = "Last",
-          role = c("aut", "cre"),
-          email = "first.last@example.com")
+Date: 2019-02-13
+Author: ....
+Maintainer: Eric Dunford <ed769@georgetown.edu>
 Description: Qualify is a package designed to ease manual (human-coded) data collection tasks by providing a streamlined html interface that users can easily generate and utilize across the duration of a project. More importantly, qualify collects key meta data as coders code. Generating novel data yield with its own data generating process, qualify captures how often entries are generated and edited, generating a complete log of how the data came to be. In short, qualify increases transparency and reproducibility of any manual data coding task.
-License: GPL-2.0
+License: LGPL-3
 Encoding: UTF-8
 LazyData: true
