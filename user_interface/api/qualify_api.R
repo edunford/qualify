@@ -24,7 +24,7 @@ cors <- function(req, res) {
 #* A test endpoint for providing dummy data
 #' @get /posts
 function(req, res){
-  master_data <- import_data_state(.project_path = db_location)
+  master_data <- qualify::import_data_state(.project_path = db_location)
   res$setHeader("Access-Control-Expose-Headers", "X-Total-Count")
   res$setHeader("X-Total-Count", nrow(master_data))
   master_data
@@ -33,14 +33,14 @@ function(req, res){
 #* An endpoint for getting specific records
 #' @get /posts/<pid>
 function(pid){
-  jsonlite::unbox(api_data_call(unit = pid,.project_path = db_location))
+  jsonlite::unbox(qualify::api_data_call(unit = pid,.project_path = db_location))
 }
 
 #' @put /posts/<pid>
 function(req){
   entry = jsonlite::fromJSON(req$postBody)
   # save(entry,file = "~/Desktop/test.Rdata")
-  upload_data(entry,.project_path = db_location)
+  qualify::upload_data(entry,.project_path = db_location)
   jsonlite::fromJSON(req$postBody)
 }
 

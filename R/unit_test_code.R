@@ -28,12 +28,16 @@ qualify(project_name = "test_db",
   
   generate_app()
 
+
 # Build app
 build_app("~/Desktop/test_project")
 
 
 # run app
 run_app("~/Desktop/test_project")
+
+# Close app
+close_app()
 
 
 

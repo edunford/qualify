@@ -86,8 +86,18 @@ build_app = function(.project_path){
 #' @examples
 run_app = function(.project_path){
   f = file.path(.project_path,".qualify")
-  system(as.character(stringr::str_glue("{f}/Rscript api/run_api.R& serve -s {f}/build")),
-         intern = T, timeout = 15)
+  .term_id <<- rstudioapi::terminalExecute(as.character(stringr::str_glue("cd {f} | Rscript /api/run_api.R& serve -s /build")))
+}
+
+
+#' close_app
+#'
+#' @return
+#' @export
+#'
+#' @examples
+close_app = function(){
+  rstudioapi::terminalKill(get(".term_id",envir = globalenv()))
 }
 
 
@@ -424,6 +434,7 @@ generate_app = function(.data){
 #' task
 #'
 #' @param .project_name initial name of the data_base build.
+#' @export
 #'
 #' @return exports all units along with the current state of the projec
 import_data_state <- function(.project_path = "",empty_value_placeholder=""){
@@ -478,6 +489,8 @@ import_data_state <- function(.project_path = "",empty_value_placeholder=""){
 #'
 #' @param unit
 #' @param .project_name
+#' 
+#' @export
 #'
 #' @return
 api_data_call = function(unit = "",.project_path = ""){
@@ -507,6 +520,8 @@ api_data_call = function(unit = "",.project_path = ""){
 #'
 #' @param entry
 #' @param .project_name
+#' 
+#' @export
 #'
 #' @return
 upload_data = function(entry,.project_path = ""){
