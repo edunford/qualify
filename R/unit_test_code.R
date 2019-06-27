@@ -29,6 +29,12 @@ qualify(project_name = "test_db",
   generate_app()
 
 
+# Dropping any existing data structure
+qualify() %>% 
+  drop_module("var_1") %>% 
+  drop_module("variable_2") %>% 
+  drop_module("Violent Deaths") 
+
 
 # Looking into the database...
 qualify() %>%
@@ -42,12 +48,8 @@ qualify() %>%
 
 qualify() %>%
   {sql_instance(.$project_path)} %>%
-  tbl("v2") %>%
+  tbl("v1") %>%
   collect()
-
-
-# Dropping any existing data structure
-qualify() %>% drop_module("var_1") %>% drop_module("variable_2") 
 
 
 # Posterior functions -----------------------------------------------------

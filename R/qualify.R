@@ -102,35 +102,30 @@ generate_module.qualify_obj =
            variable_name = "",
            caption = "",
            ...){
+    
   # Connect to extant DB entry 
   con = sql_instance(.data$project_path)
   unit = .data$unit_of_analysis
   
   # Upload application instructions for proposed module.
   if(".input_state"  %in%  src_tbls(con)){
-    current = dplyr::tbl(con,".input_state") %>% dplyr::select(-.id) %>% dplyr::collect() # Import the current input state
-    
-    state <- 
-      tibble::tibble(var_name = variable_name,
-                     caption = caption,
-                     code_map = map_input(...)) %>%
-      dplyr::bind_rows(current) %>% 
-      unique(.) %>% 
-      {dplyr::mutate(.,.id = paste0("v",nrow(.):1))} %>% 
-      dplyr::select(.,.id,dplyr::everything()) %>% 
-      dplyr::arrange(.id) 
-    dplyr::copy_to(dest=con,df = state, name = ".input_state",overwrite = T,temporary = F)
-    
-  } else{
-    state <- 
-      tibble::tibble(.id = "v1",
-                     var_name = variable_name,
-                     caption = caption,
-                     code_map = map_input(...)) 
-      dplyr::copy_to(dest=con,df = state, name = ".input_state",overwrite = T,temporary = F)
+    current_ids = dplyr::tbl(con,".input_state") %>% dplyr::collect() %>% {.$.id}
+    top_ind = max(as.numeric(gsub("v","",current_ids)))
+  }else{
+    top_ind = 0
   }
   
-  # Generate enmpy table for respective variable field
+  # Write to current state of the project...
+  state <- 
+    tibble::tibble(var_name = variable_name,
+                   caption = caption,
+                   code_map = map_input(...)) %>%
+    {dplyr::mutate(.,.id = paste0("v",top_ind + 1))} %>%
+    dplyr::select(.,.id,dplyr::everything()) 
+  DBI::dbWriteTable(con$con,name = ".input_state",value = state,append=T)
+  
+  
+  # Generate empty table for respective variable field
   var_ind = state %>% dplyr::filter(var_name == variable_name) %>% .$.id
   names = names(list(...))
   entry = dplyr::as_tibble(matrix("",ncol = length(names)))
@@ -139,7 +134,7 @@ generate_module.qualify_obj =
     tidyr::crossing(tibble::tibble(.unit=unit),.) %>% 
     dplyr::mutate(timestamp = as.character(Sys.time())) %>% 
     dplyr::copy_to(dest=con,df = ., name = var_ind,overwrite = T,temporary = F)
-  
+
   return(invisible(.data)) # pass back initial qualify instructions (but can't see it)
 }
 
@@ -166,17 +161,27 @@ drop_module.qualify_obj = function(.data,variable_name){
   # Connect to extant DB entry 
   con = sql_instance(.data$project_path)
   
+  # Locate specific table lookup
+  var_ind <- 
+    tbl(con,".input_state") %>% 
+    filter(var_name==variable_name) %>% 
+    collect() %>% 
+    {.$.id}
+  
   # Drop from the input state
-  if(".input_state"  %in%  dplyr::src_tbls(con)){
+  if(length(var_ind)>0){
+    # If any variable entry exists for requested entry, drop table
+    dplyr::copy_to(con,df=tibble::tibble(NA),name = var_ind,overwrite = T)
+    
+    # Drop specific data table entry
     tbl(con,".input_state") %>% 
       dplyr::collect() %>% 
-      dplyr::filter(var_name!=variable_name) %>% 
+      dplyr::filter(.id!=var_ind) %>% 
       dplyr::copy_to(dest=con,df = ., name = ".input_state",
                      overwrite = T,temporary = F)
+  }else{
+    cat(paste0("\nA module for ",variable_name," isn't present in the existing database. Entry was either deleted or has yet to be built.\n"))
   }
-  
-  # Drop specific data table entry
-  dplyr::copy_to(con,df=tibble::tibble(NA),name = paste0("field_",variable_name),overwrite = T)
   
   return(invisible(.data)) # pass back initial qualify instructions (but can't see it)
 }
@@ -315,9 +320,6 @@ generate_app = function(.data){
 
 
 
-
-
-
 # API Function Calls ------------------------------------------------------
 
 #' import_data_state
@@ -419,18 +421,17 @@ upload_data = function(entry,.project_path = ""){
   entry["Last Update"] = NULL
   tags = stringr::str_remove_all(stringr::str_extract_all(names(entry),"v\\d_",simplify = T),"_") 
   vars = stringr::str_remove_all(names(entry),"v\\d_")
-  to_record <- 
-    tibble::tibble(.tag = tags,vars,entry = unlist(entry,use.names = F)) %>% 
-    tidyr::spread(vars,entry,fill="") %>% 
-    dplyr::mutate(.unit=id)
+  entries = unlist(entry,use.names = F)
   
   # Loop through tags and draw out relevant features
-  for(t in to_record$.tag){
-    tmp = to_record %>% 
-      dplyr::filter(.tag == t) %>%
-      dplyr::select(.unit,vars[tags == t]) %>% 
-      dplyr::mutate(timestamp = as.character(Sys.time()))
-    
+  for(t in unique(tags)){
+    tmp = 
+      tibble::tibble(.tag = t,vars = vars[tags == t],entry = entries[tags == t]) %>% 
+      tidyr::spread(vars,entry,fill="") %>% 
+      dplyr::mutate(.unit=id) %>% 
+      dplyr::mutate(timestamp = as.character(Sys.time())) %>% 
+      dplyr::select(-.tag)
+      
     # Append to existing data frame
     con = sql_instance(.project_path)
     DBI::dbWriteTable(conn=con$con, name = t, value = tmp,append=T) 
