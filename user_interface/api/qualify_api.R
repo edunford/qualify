@@ -42,6 +42,7 @@ function(pid){
 #' @put /posts/<pid>
 function(req){
   entry = jsonlite::fromJSON(req$postBody)
+  # save(entry,file = "~/Desktop/test.Rdata")
   upload_data(entry,.project_path = db_location)
   jsonlite::fromJSON(req$postBody)
 }

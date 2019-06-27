@@ -314,6 +314,10 @@ generate_app = function(.data){
 
 
 
+
+
+
+
 # API Function Calls ------------------------------------------------------
 
 #' import_data_state
@@ -347,7 +351,7 @@ import_data_state <- function(.project_path = "",empty_value_placeholder=""){
     report <- 
       tmp %>% 
       dplyr::select(-timestamp) %>% 
-      dplyr::bind_rows(report,.)
+      dplyr::bind_rows(report,.) 
   }
   
   # return the data state with a progress report
@@ -355,7 +359,7 @@ import_data_state <- function(.project_path = "",empty_value_placeholder=""){
     report %>% 
     dplyr::group_by(.unit) %>% 
     tidyr::nest() %>% 
-    dplyr::mutate(progress = map(data,function(x) sum(rowSums(x == empty_value_placeholder) < ncol(x))/nrow(x))) %>% 
+    dplyr::mutate(progress = map(data,function(x) sum(rowSums(x == empty_value_placeholder | is.na(x)) < ncol(x))/nrow(x))) %>% 
     tidyr::unnest(progress) %>% 
     dplyr::select(id = .unit, Progress = progress)
   
@@ -389,6 +393,7 @@ api_data_call = function(unit = "",.project_path = ""){
       dplyr::select(-.unit) %>% 
       dplyr::collect() %>% 
       dplyr::slice(1) %>% 
+      dplyr::select(-timestamp) %>% 
       {colnames(.) = paste0(t,"_",colnames(.));.} %>% 
       dplyr::bind_cols(api_order,.) -> api_order
   }
@@ -416,14 +421,14 @@ upload_data = function(entry,.project_path = ""){
   vars = stringr::str_remove_all(names(entry),"v\\d_")
   to_record <- 
     tibble::tibble(.tag = tags,vars,entry = unlist(entry,use.names = F)) %>% 
-    tidyr::spread(vars,entry) %>% 
+    tidyr::spread(vars,entry,fill="") %>% 
     dplyr::mutate(.unit=id)
   
   # Loop through tags and draw out relevant features
   for(t in to_record$.tag){
     tmp = to_record %>% 
       dplyr::filter(.tag == t) %>%
-      dplyr::select(-.tag) %>% 
+      dplyr::select(.unit,vars[tags == t]) %>% 
       dplyr::mutate(timestamp = as.character(Sys.time()))
     
     # Append to existing data frame
