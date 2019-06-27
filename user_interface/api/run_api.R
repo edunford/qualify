@@ -1,2 +1,2 @@
 # Run qualify API
-plumber::plumb(here::here("user_interface/api/qualify_api.R"))$run(port=8000)
+plumber::plumb("api/qualify_api.R")$run(port=8000)

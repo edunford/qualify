@@ -1,10 +1,7 @@
 # Qualify Database API
 
-source(here::here("R/qualify.R"))
-require(tidyverse)
-
-# TEMPORARY
-db_location <- "~/Desktop/test_project/"
+# Locate the db
+db_location <- readr::read_lines(".qualify/project_file_path.txt")
 
 # Plumber API Features ----------------------------------------------------
 

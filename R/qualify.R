@@ -6,6 +6,93 @@
 #   - {Abby} Auto-import of existing codebook. 
 
 
+
+# Installation ------------------------------------------------------------
+
+
+
+#' install_npm
+#'
+#' Install node JS to run the react library. 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+install_npm = function(){
+  os = .Platform$OS.type
+  if(os == "unix"){
+    version = suppressMessages(system('npm -v',ignore.stdout = T))
+    if(length(version) == 0 | is.null(version)){
+      cat(paste0("\nInstalling npm dependencies!",
+                 "\nCode assumes user has homebrew installed on computer",
+                 "\nIf this is note the case, go here (https://brew.sh/) to install homebrew."))
+      system("brew install node; npm install -g serve")
+      cat("\nNode JS now installed. You're good to go.")
+    }else{cat("Node JS already installed. You're good to go.")}
+  }else{
+    version = suppressMessages(system('npm -v',ignore.stdout = T))
+    if(length(version) == 0 | is.null(version)){
+      cat(paste0("\nInstalling npm dependencies!",
+                 "\nCode assumes user has chocolatey installed on computer",
+                 "\nIf this is note the case, go here (https://chocolatey.org) to install chocolatey"))
+      system("choco install nodejs; npm install -g serve")
+      cat("\nNode JS now installed. You're good to go.")
+    }else{cat("Node JS already installed. You're good to go.")}
+  }
+}
+
+
+
+#' build_app
+#'
+#' Builds and moves the application to the project directory. 
+#'
+#' @param .project_path 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+build_app = function(.project_path){
+  
+  # Build application
+  system("cd user_interface; npm run build")
+  
+  if(fs::file_exists(file.path(.project_path,".qualify/"))){
+    fs::file_delete(file.path(.project_path,".qualify/"))
+  }
+  
+  
+  # Move build to file path
+  fs::dir_create(file.path(.project_path,".qualify/")) 
+  fs::dir_copy("user_interface/build/",file.path(.project_path,".qualify/"))
+  
+  # Save thumbprint of file path
+  readr::write_lines(.project_path,file.path(.project_path,".qualify","project_file_path.txt"))
+  
+  # Move API features over.
+  fs::dir_copy("user_interface/api/",file.path(.project_path,".qualify/"))
+}
+
+
+#' run_app
+#'
+#' @param .project_path 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+run_app = function(.project_path){
+  f = file.path(.project_path,".qualify")
+  system(as.character(stringr::str_glue("{f}/Rscript api/run_api.R& serve -s {f}/build")),
+         intern = T, timeout = 15)
+}
+
+
+
+
 # Front-End Interface ----------------------------------------------
 
 #' qualify
@@ -18,6 +105,15 @@
 #'
 #' @return
 #' @export
+#' @import tidyr
+#' @import dplyr
+#' @import purrr
+#' @import readr
+#' @import stringr
+#' @import RSQLite
+#' @import DBI
+#' @import jsonlite
+#' @import plumber
 #'
 #' @examples
 qualify = function(project_name = "test_db",
