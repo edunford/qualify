@@ -8,6 +8,7 @@
 /Data/test_db.sqlite
 
 # dependencies
+node_modules/
 /user_interface/node_modules
 /user_interface/.pnp
 /user_interface.pnp.js
