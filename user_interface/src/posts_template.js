@@ -66,7 +66,7 @@ export const PostList = props => (
         backgroundColor: '#efefef',
         textAlign: 'center',
       }}> <strong>
-            <a style={{color: 'black'}} href="https://github.com/edunford/qualify">Qualify</a> is made by <a style={{color: 'black'}} href="http://ericdunford.com/">Eric Dunford</a>, <a style={{color: 'black'}} href="https://nhagar.github.io/">Nick Hagar</a>, Abigail Smith, <a style={{color: 'black'}} href="mailto:reabbot@gmail.com">Rebecca Abbott</a>, and <a style={{color: 'black'}} href="mailto:kevinpedraza2017@u.northwestern.edu">Kevin Pedraza</a>.
+            <a style={{color: 'black'}} href="https://github.com/edunford/qualify">Qualify</a> is made by <a style={{color: 'black'}} href="http://ericdunford.com/">Eric Dunford</a>, <a style={{color: 'black'}} href="https://nhagar.github.io/">Nick Hagar</a>, <a style={{color: 'black'}} href="http://abbylsmith.me/">Abby Smith</a>, <a style={{color: 'black'}} href="mailto:reabbot@gmail.com">Rebecca Abbott</a>, and <a style={{color: 'black'}} href="mailto:kevinpedraza2017@u.northwestern.edu">Kevin Pedraza</a>.
           </strong>
       </div>
       </React.Fragment>
