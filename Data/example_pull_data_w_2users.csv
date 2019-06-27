@@ -1,0 +1,25 @@
+.user,variable,.unit,timestamp,evidence,publication_date,code,evid,date,count
+eric,variable_2,aa,2019-06-27 11:01:57,<p>dflaflasdf</p>,,2,NA,NA,NA
+eric,variable_2,bb,2019-06-27 11:04:29,,,,NA,NA,NA
+eric,variable_2,c3,2019-06-27 11:01:16,,,,NA,NA,NA
+eric,variable_2,d,2019-06-27 11:01:16,,,,NA,NA,NA
+eric,var_1,aa,2019-06-27 11:03:34,NA,NA,,,,NA
+eric,var_1,bb,2019-06-27 11:04:29,NA,NA,,,,NA
+eric,var_1,c3,2019-06-27 11:03:34,NA,NA,,,,NA
+eric,var_1,d,2019-06-27 11:03:34,NA,NA,,,,NA
+eric,Violent Deaths,aa,2019-06-27 11:03:34,NA,NA,NA,NA,,
+eric,Violent Deaths,bb,2019-06-27 11:04:29,NA,NA,NA,NA,,500 +
+eric,Violent Deaths,c3,2019-06-27 11:03:34,NA,NA,NA,NA,,
+eric,Violent Deaths,d,2019-06-27 11:03:34,NA,NA,NA,NA,,
+Rebecca,variable_2,aa,2019-06-27 11:01:57,<p>dflaflasdf</p>,,2,NA,NA,NA
+Rebecca,variable_2,bb,2019-06-27 11:04:29,,,,NA,NA,NA
+Rebecca,variable_2,c3,2019-06-27 11:01:16,,,,NA,NA,NA
+Rebecca,variable_2,d,2019-06-27 11:01:16,,,,NA,NA,NA
+Rebecca,var_1,aa,2019-06-27 11:03:34,NA,NA,,,,NA
+Rebecca,var_1,bb,2019-06-27 11:04:29,NA,NA,,,,NA
+Rebecca,var_1,c3,2019-06-27 11:03:34,NA,NA,,,,NA
+Rebecca,var_1,d,2019-06-27 11:03:34,NA,NA,,,,NA
+Rebecca,Violent Deaths,aa,2019-06-27 11:03:34,NA,NA,NA,NA,,
+Rebecca,Violent Deaths,bb,2019-06-27 11:04:29,NA,NA,NA,NA,,500 +
+Rebecca,Violent Deaths,c3,2019-06-27 11:03:34,NA,NA,NA,NA,,
+Rebecca,Violent Deaths,d,2019-06-27 11:03:34,NA,NA,NA,NA,,

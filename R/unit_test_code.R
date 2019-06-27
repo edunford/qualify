@@ -6,6 +6,7 @@ source(here::here("R/qualify.R"))
 
 # Manual build of the data entries
 qualify(project_name = "test_db",
+        project_path = "~/Desktop/test_project",
         unit_of_analysis = c("aa","bb","c3","d")) %>%
 
   generate_module(variable_name = "var_1",
@@ -14,11 +15,16 @@ qualify(project_name = "test_db",
                   publication_date = field_date(),
                   code = field_dropdown(c(1,2,3,4))) %>% 
   
-  generate_module(variable_name = "var_2",
-                  caption = "...",
-                  evidence = field_text(),
-                  publication_date = field_date(),
+  generate_module(variable_name = "variable_2",
+                  caption = "Another variable",
+                  evid = field_text(),
+                  date = field_date(),
                   code = field_dropdown(c(1,2,3,4))) %>% 
+  
+  generate_module(variable_name = "Violent Deaths",
+                  caption = "Another variable",
+                  count = field_dropdown(c("0-100","100-500","500 +")),
+                  date = field_date()) %>% 
   
   generate_app()
 
@@ -36,15 +42,12 @@ qualify() %>%
 
 qualify() %>%
   {sql_instance(.$project_path)} %>%
-  tbl("v1") %>%
+  tbl("v2") %>%
   collect()
 
 
 # Dropping any existing data structure
-qualify() %>% drop_module("var_1") %>% drop_module("var_2")
-
-
-
+qualify() %>% drop_module("var_1") %>% drop_module("variable_2") 
 
 
 # Posterior functions -----------------------------------------------------
@@ -71,4 +74,17 @@ pull_data("~/Desktop/test_project/")
       mutate(code = as.numeric(code)) %>% 
       spread(variable,code,fill = 0) 
 
+
+    # Example data for R & K
+    bind_rows(
+      pull_data("~/Desktop/test_project/") %>% 
+        mutate(.user = "eric") %>% 
+        select(.user,everything()),
+      pull_data("~/Desktop/test_project/") %>% 
+        mutate(.user = "Rebecca") %>% 
+        select(.user,everything())
+    ) %>% 
+      write_csv(.,"Data/example_pull_data_w_2users.csv")
+    
+    
 
