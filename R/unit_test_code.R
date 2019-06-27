@@ -54,8 +54,13 @@ pull_timeline("~/Desktop/test_project/",round_date = "second")
 
     # Various time dates work
     pull_timeline("~/Desktop/test_project/",round_date = "minute")
-    
     pull_timeline("~/Desktop/test_project/",round_date = "month")
+    
+    # Curation example: plotting contributions
+    pull_timeline("~/Desktop/test_project/",round_date = "hour") %>% 
+      ggplot(aes(timestamp,n,fill=variable)) +
+      geom_col(position = "dodge") 
+    
 
 # Pull workable data frame from existing project
 pull_data("~/Desktop/test_project/") 

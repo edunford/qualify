@@ -483,8 +483,6 @@ pull_timeline = function(.project_path,round_date = "minute"){
   }
 } 
 
-dd = "2019-06-27 01:22:35"
-lubridate::round_date(lubridate::ymd_hms(dd),unit = "second")
 
 #' pull_data
 #'
