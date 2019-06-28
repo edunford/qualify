@@ -26,7 +26,7 @@ install_npm = function(){
     if(length(version) == 0 | is.null(version)){
       cat(paste0("\nInstalling npm dependencies!",
                  "\nCode assumes user has homebrew installed on computer",
-                 "\nIf this is note the case, go here (https://brew.sh/) to install homebrew."))
+                 "\nIf this is not the case, go here (https://brew.sh/) to install homebrew."))
       system("brew install node; npm install -g serve")
       cat("\nNode JS now installed. You're good to go.")
     }else{cat("Node JS already installed. You're good to go.")}
@@ -35,7 +35,7 @@ install_npm = function(){
     if(length(version) == 0 | is.null(version)){
       cat(paste0("\nInstalling npm dependencies!",
                  "\nCode assumes user has chocolatey installed on computer",
-                 "\nIf this is note the case, go here (https://chocolatey.org) to install chocolatey"))
+                 "\nIf this is not the case, go here (https://chocolatey.org) to install chocolatey"))
       system("choco install nodejs; npm install -g serve")
       cat("\nNode JS now installed. You're good to go.")
     }else{cat("Node JS already installed. You're good to go.")}
@@ -56,13 +56,13 @@ install_npm = function(){
 #' @examples
 build_app = function(.project_path){
   
-  # Build application
-  system("cd user_interface; npm run build")
-  
-  if(fs::file_exists(file.path(.project_path,".qualify/"))){
-    fs::file_delete(file.path(.project_path,".qualify/"))
+  # Clear previous application build
+  if(fs::file_exists(path = file.path(.project_path,".qualify/"))){
+    fs::file_delete(path = file.path(.project_path,".qualify/"))
   }
   
+  # Build application
+  system("cd user_interface; npm run build")
   
   # Move build to file path
   fs::dir_create(file.path(.project_path,".qualify/")) 
@@ -72,13 +72,18 @@ build_app = function(.project_path){
   readr::write_lines(.project_path,file.path(.project_path,".qualify","project_file_path.txt"))
   
   # Move API features over.
-  fs::dir_copy("user_interface/api/",file.path(.project_path,".qualify/"))
+  fs::file_copy("user_interface/api/run_api.R",file.path(.project_path,".qualify/"))
+  fs::file_copy("user_interface/api/qualify_api.R",file.path(.project_path,".qualify/"))
 }
 
 
 #' run_app
 #'
-#' @param .project_path 
+#' Run the qualify application via a terminal instance. Current implementation
+#' is a work around to ensure the R console resources aren't commited when
+#' application is run.
+#'
+#' @param .project_path
 #'
 #' @return
 #' @export
@@ -86,21 +91,48 @@ build_app = function(.project_path){
 #' @examples
 run_app = function(.project_path){
   f = file.path(.project_path,".qualify")
-  .term_id <<- rstudioapi::terminalExecute(as.character(stringr::str_glue("cd {f} | Rscript /api/run_api.R& serve -s /build")))
+  .term_id <- rstudioapi::terminalExecute(as.character(stringr::str_glue("cd {f}; Rscript run_api.R& serve -s /build")))
+  
+  # Open app in working browser
+  Sys.sleep(1)
+  httr::BROWSE(system("pbpaste",ignore.stdout = F,intern = T)) 
 }
 
 
 #' close_app
+#'
+#' Close the application being hosted through the terminal. Current
+#' implementation closes all open connections. 
 #'
 #' @return
 #' @export
 #'
 #' @examples
 close_app = function(){
-  rstudioapi::terminalKill(get(".term_id",envir = globalenv()))
+  # rstudioapi::terminalKill(get(".term_id",envir = globalenv()))
+  rstudioapi::terminalKill(rstudioapi::terminalList())
 }
 
 
+#' delete_app
+#' 
+#' Delete the entire application and data. Use with caution
+#'
+#' @param .project_path 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+delete_app = function(.project_path){
+  loc = file.path(.project_path,".qualify")
+  if(fs::dir_exists(loc)){
+    fs::dir_delete(loc)
+    fs::file_delete(file.path(.project_path,".qualify_data.sqlite"))
+  }else{
+    cat("\nNo application folder present.")
+  }
+}
 
 
 # Front-End Interface ----------------------------------------------
