@@ -72,10 +72,19 @@ export const PostList = props => (
       </React.Fragment>
 );
 
+const Aside = ({ record }) => (
+    <div style={{ width: 100, margin: '1em' }}>
+        {record && (
+            <Typography variant="title">
+                {record.id}
+            </Typography>
+        )}
+    </div>
+);
 
 // Main Application
 export const PostEdit = (props) => (
-    <Edit title={<PostTitle />} undoable={false} {...props}>
+    <Edit title={<PostTitle />} undoable={false} aside={<Aside />} {...props}>
         <TabbedForm toolbar={<PostEditToolbar />}>
             <FormTab label="Coding">
                 XXXXX
