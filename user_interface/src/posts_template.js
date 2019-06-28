@@ -1,6 +1,7 @@
 import React from 'react';
 import { SelectInput, Edit, TextInput, TabbedForm, FormTab, DateInput, TextField , List, Datagrid, Toolbar, SaveButton} from 'react-admin';
 import RichTextInput from 'ra-input-rich-text';
+import { Typography } from '@material-ui/core'; // for side post
 
 // Methods
 const headerStyle= {
