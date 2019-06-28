@@ -455,8 +455,8 @@ upload_data = function(entry,.project_path = ""){
 #' @export
 #'
 #' @examples
-pull_timeline = function(.project_path,round_date = "minute"){
-  if(dir.exists(.project_path) & check_db_exists(.project_path)){
+pull_timeline = function(.project_path="",round_date = "minute"){
+  if(dir.exists(paths = .project_path) & check_db_exists(.project_path = .project_path)){
     con = sql_instance(.project_path) 
     all_tbls = grep("v", dplyr::src_tbls(con),value = T)
     data_summary = c()
@@ -552,7 +552,7 @@ pull_data = function(.project_path = ""){
 #' check_db_exists()
 #' 
 check_db_exists = function(.project_path = ""){
-  set_path = paste0(path,"/.qualify_data.sqlite")
+  set_path = paste0(.project_path,"/.qualify_data.sqlite")
   file.exists(set_path)
 }
 
