@@ -4,7 +4,7 @@ In the social sciences, researchers regularly engage in manual data coding tasks
 
 ## Development
 
-The project is currently in **_beta_**, but we aim to have a working beta version of the package up (functional on Mac OS) by the end of summer.
+The project is currently in **_beta_**, but we aim to have a working beta version of the package up (functional on Mac OS) by the end of summer 2019.
 
 ## Usage
 
