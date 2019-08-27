@@ -4,7 +4,7 @@ source(here::here("R/qualify.R"))
 require(tidyverse)
 
 # TEMPORARY
-db_location <- "~/Desktop/test_project/"
+db_location <- "~/Desktop/SICSS_Presentation/Example2"
 
 # Plumber API Features ----------------------------------------------------
 
@@ -46,7 +46,3 @@ function(req){
   upload_data(entry,.project_path = db_location)
   jsonlite::fromJSON(req$postBody)
 }
-
-
-
-
